@@ -18,7 +18,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `ssh` | `ed25519` key, macOS Keychain agent, prints the public key for GitHub |
 | `dotfiles` | Symlinks zsh, gitignore, EditorConfig, and Starship into `$HOME` |
 
-Default apps from the Brewfile include Ghostty, Rectangle, Raycast, Cursor, VS Code, Firefox, Chrome, Brave, Tor Browser, 1Password, IINA, Stats, and Keka. Edit the file before the first run if you want a leaner machine.
+Default apps from the Brewfile include Ghostty, Rectangle, Raycast, Cursor, VS Code, Firefox, Chrome, Brave, Tor Browser, Bitwarden, IINA, Stats, and Keka. Edit the file before the first run if you want a leaner machine.
 
 ## Requirements
 
@@ -109,6 +109,6 @@ That syntax-checks every bash script and runs [shellcheck](https://www.shellchec
 ## After the first boot
 
 1. Add the printed SSH public key at [github.com/settings/keys](https://github.com/settings/keys).
-2. Sign in to 1Password, GitHub (`gh auth login`), and the App Store.
+2. Sign in to Bitwarden, GitHub (`gh auth login`), and the App Store.
 3. In Ghostty (or Terminal), confirm `echo $SHELL` is `/bin/zsh` and that `brew`, `rg`, and `starship` are on PATH.
 4. Re-run `./bootstrap.sh doctor` whenever you want a checklist of what is still missing.
