@@ -14,11 +14,11 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `python` | Installs CPython with pyenv (global + extra 3.x versions), upgrades pip |
 | `macos` | Finder, Dock, keyboard, trackpad, screenshots, firewall, Safari develop menu, Firefox as default browser |
 | `shell` | Confirms **zsh** is the login shell; registers Homebrew bash in `/etc/shells` |
-| `git` | Name, email, `main` as default branch, rebase-on-pull, useful aliases |
+| `git` | Name, email, `main` as default branch, rebase-on-pull, Meld as diff/merge tool |
 | `ssh` | `ed25519` key, macOS Keychain agent, prints the public key for GitHub |
 | `dotfiles` | Symlinks zsh, gitignore, EditorConfig, and Starship into `$HOME` |
 
-Default apps from the Brewfile include Ghostty, Rectangle, Raycast, Cursor, PyCharm, VS Code, Firefox, Chrome, Brave, Tor Browser, Bitwarden, Signal, Slack, Docker Desktop, IINA, Stats, and Keka. Edit the file before the first run if you want a leaner machine.
+Default apps from the Brewfile include Ghostty, Rectangle, Raycast, Cursor, PyCharm, VS Code, Meld, Firefox, Chrome, Brave, Tor Browser, Bitwarden, Signal, Slack, Docker Desktop, IINA, Stats, and Keka. Edit the file before the first run if you want a leaner machine.
 
 ## Requirements
 

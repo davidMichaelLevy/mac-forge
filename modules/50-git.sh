@@ -54,6 +54,18 @@ elif command_exists vim; then
   git_global core.editor vim
 fi
 
+eval_brew_shellenv
+if command_exists meld; then
+  git_global diff.tool meld
+  git_global difftool.prompt false
+  git_global merge.tool meld
+  git_global mergetool.prompt false
+  git_global mergetool.keepBackup false
+  log_success "diff/merge tool = meld"
+else
+  log_warn "meld not on PATH — skip git difftool (run ./bootstrap.sh packages)"
+fi
+
 # macOS keychain helper is built in.
 if is_macos; then
   git_global credential.helper osxkeychain

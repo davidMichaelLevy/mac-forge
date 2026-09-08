@@ -40,7 +40,7 @@ Modules (all of them, in order, if you omit the list):
   python      Install CPython with pyenv (global plus extra versions)
   macos       Finder, Dock, keyboard, screenshots, and other defaults
   shell       Make sure zsh is the login shell
-  git         Global identity and sane git defaults
+  git         Global identity, sane defaults, Meld as diff/merge tool
   ssh         ed25519 key plus macOS keychain agent
   dotfiles    Symlink shell/editor config into $HOME
 
@@ -150,7 +150,7 @@ run_doctor() {
   eval_brew_shellenv
   eval_pyenv
 
-  for cmd in brew git gh nvim starship fnm uv pyenv pipenv rg fd fzf bat eza; do
+  for cmd in brew git gh nvim starship fnm uv pyenv pipenv meld rg fd fzf bat eza; do
     if command_exists "$cmd"; then
       ok="$(command -v "$cmd")"
       log_success "$(printf '%-11s %s' "$cmd" "$ok")"
