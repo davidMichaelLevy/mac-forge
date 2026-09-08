@@ -80,11 +80,17 @@ apply_keyboard() {
 }
 
 apply_trackpad() {
-  log_info "Trackpad"
+  log_info "Trackpad & scroll"
   if is_truthy "${MACOS_TAP_TO_CLICK:-true}"; then
     defaults_write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
     defaults_write com.apple.AppleMultitouchTrackpad Clicking -bool true
     defaults_write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+  fi
+  # true = Apple "Natural" (content follows fingers). false = reversed / Windows-style.
+  if is_truthy "${MACOS_NATURAL_SCROLL:-false}"; then
+    defaults_write NSGlobalDomain com.apple.swipescrolldirection -bool true
+  else
+    defaults_write NSGlobalDomain com.apple.swipescrolldirection -bool false
   fi
 }
 

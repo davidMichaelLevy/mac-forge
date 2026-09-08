@@ -62,7 +62,7 @@ Open a **new terminal** when it finishes so PATH, zsh, and Starship pick up the 
 
 Nothing in the scripts is meant to be edited for day-to-day taste. Change these instead:
 
-1. **`config/config.sh`** — identity, which modules run, Dock autohide, fast key repeat, hidden files, tap-to-click, default browser, Python version.
+1. **`config/config.sh`** — identity, which modules run, Dock autohide, fast key repeat, hidden files, tap-to-click, scroll direction, default browser, Python version.
 2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids.
 3. **`dotfiles/`** — zsh, Starship, and the global gitignore. They are symlinked; edit them in this repo.
 4. **`~/.zshrc.local`** — machine-only aliases and secrets. The linked `~/.zshrc` sources it if present.

@@ -105,6 +105,7 @@ macos_bootstrap_load_config() {
   MACOS_KEY_REPEAT_FAST="${MACOS_KEY_REPEAT_FAST:-true}"
   MACOS_SHOW_HIDDEN_FILES="${MACOS_SHOW_HIDDEN_FILES:-true}"
   MACOS_TAP_TO_CLICK="${MACOS_TAP_TO_CLICK:-true}"
+  MACOS_NATURAL_SCROLL="${MACOS_NATURAL_SCROLL:-false}"
   # Empty means skip; unset defaults to firefox.
   MACOS_DEFAULT_BROWSER="${MACOS_DEFAULT_BROWSER-firefox}"
   # Empty means skip; unset defaults to the latest stable CPython 3.x.
