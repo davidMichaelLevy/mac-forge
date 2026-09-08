@@ -27,9 +27,24 @@ Default apps from the Brewfile include Ghostty, Rectangle, Raycast, Cursor, VS C
 
 ## Quick start
 
+On a new Mac:
+
 ```bash
-git clone <this-repo> ~/macos-bootstrap
-cd ~/macos-bootstrap
+bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh)
+```
+
+That downloads the repo to `~/mac-forge` and runs `bootstrap.sh`. Pass-through examples:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh) --dry-run
+bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh) --no-run
+```
+
+Or clone it yourself:
+
+```bash
+git clone https://github.com/davidMichaelLevy/mac-forge.git ~/mac-forge
+cd ~/mac-forge
 cp config/config.example.sh config/config.sh
 # edit config/config.sh  — name, email, computer name, module toggles
 # edit config/Brewfile   — formulae and casks
@@ -64,6 +79,7 @@ Set `INSTALL_CASKS=false` in config to install CLI formulae only.
 ## Layout
 
 ```
+install.sh            Download this repo and run bootstrap.sh
 bootstrap.sh          Entry point
 lib/common.sh         Logging, dry-run, config loader, symlink helper
 modules/              One numbered script per concern (sourced in order)
