@@ -1,0 +1,7 @@
+# Personal machine config (name, email, toggles)
+config/config.sh
+
+.DS_Store
+*.swp
+*.swo
+*~

@@ -1,0 +1,77 @@
+# Brewfile — edit this list for the machine you want.
+# Re-run `./bootstrap.sh packages` after changing it.
+# Formulae always install when INSTALL_PACKAGES=true.
+# Casks (apps + fonts) install when INSTALL_CASKS=true.
+
+# --- CLI: version control & GitHub ----------------------------------------
+brew "git"
+brew "git-lfs"
+brew "gh"
+
+# --- CLI: everyday tools --------------------------------------------------
+brew "bash"
+brew "wget"
+brew "curl"
+brew "jq"
+brew "yq"
+brew "ripgrep"
+brew "fd"
+brew "fzf"
+brew "bat"
+brew "eza"
+brew "tree"
+brew "htop"
+brew "btop"
+brew "watch"
+brew "tmux"
+brew "neovim"
+brew "starship"
+brew "shellcheck"
+brew "shfmt"
+
+# --- CLI: GNU replacements (macOS ships older BSD variants) ---------------
+brew "coreutils"
+brew "gnu-sed"
+brew "findutils"
+brew "grep"
+brew "gawk"
+brew "gnupg"
+
+# --- CLI: languages & build -----------------------------------------------
+brew "fnm"          # fast Node version manager
+brew "uv"           # Python package/version manager
+brew "go"
+brew "cmake"
+brew "pkg-config"
+
+# --- CLI: Mac App Store ---------------------------------------------------
+brew "mas"
+
+# --- apps -----------------------------------------------------------------
+cask "ghostty"
+cask "rectangle"
+cask "raycast"
+cask "cursor"
+cask "visual-studio-code"
+cask "firefox"
+cask "google-chrome"
+cask "1password"
+cask "appcleaner"
+cask "iina"
+cask "stats"
+cask "keka"
+
+# Optional extras — uncomment as needed:
+# cask "orbstack"
+# cask "docker"
+# cask "slack"
+# cask "zoom"
+# cask "notion"
+# cask "spotify"
+# cask "figma"
+# cask "obsidian"
+
+# --- fonts ----------------------------------------------------------------
+cask "font-jetbrains-mono-nerd-font"
+cask "font-fira-code-nerd-font"
+cask "font-inter"
