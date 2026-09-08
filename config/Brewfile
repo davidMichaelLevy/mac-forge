@@ -56,10 +56,14 @@ cask "ghostty"
 cask "rectangle"
 cask "raycast"
 cask "cursor"
+cask "pycharm"
 cask "visual-studio-code"
 cask "bitwarden"
 cask "signal"
 cask "slack"
+# Docker Engine + GUI. Heavy: Linux VM, more RAM/CPU, slower cold start.
+# Homebrew's current cask token (the old name was "docker").
+cask "docker-desktop"
 cask "appcleaner"
 cask "iina"
 cask "stats"
@@ -72,8 +76,12 @@ cask "brave-browser"
 cask "tor-browser"
 
 # Optional extras — uncomment as needed:
+# OrbStack — drop-in Docker Desktop replacement (same `docker` CLI).
+# Switch if Desktop is slow, battery-hungry, or eats RAM: OrbStack boots in
+# seconds, uses a lighter VM, and file sharing is faster. Do not install both;
+# comment out docker-desktop above first (`brew uninstall --cask docker-desktop`).
+# Free for personal use; company use needs a paid license (same idea as Desktop).
 # cask "orbstack"
-# cask "docker"
 # cask "zoom"
 # cask "notion"
 # cask "spotify"
