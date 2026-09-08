@@ -37,6 +37,7 @@ Modules (all of them, in order, if you omit the list):
   prereqs     Xcode Command Line Tools, Rosetta
   homebrew    Install Homebrew and put it on PATH
   packages    Brewfile formulae, casks, and fonts
+  python      Install CPython with pyenv (global plus extra versions)
   macos       Finder, Dock, keyboard, screenshots, and other defaults
   shell       Make sure zsh is the login shell
   git         Global identity and sane git defaults
@@ -147,8 +148,9 @@ run_doctor() {
   fi
 
   eval_brew_shellenv
+  eval_pyenv
 
-  for cmd in brew git gh nvim starship fnm uv rg fd fzf bat eza; do
+  for cmd in brew git gh nvim starship fnm uv pyenv pipenv rg fd fzf bat eza; do
     if command_exists "$cmd"; then
       ok="$(command -v "$cmd")"
       log_success "$(printf '%-11s %s' "$cmd" "$ok")"
@@ -156,6 +158,22 @@ run_doctor() {
       log_warn "$(printf '%-11s missing' "$cmd")"
     fi
   done
+
+  printf '\n    Python\n'
+  if command_exists pyenv; then
+    log_success "$(printf '%-11s %s' "pyenv" "$(pyenv version-name 2>/dev/null || echo '(no global)')")"
+    if command_exists python; then
+      log_success "$(printf '%-11s %s' "python" "$(python --version 2>&1) $(command -v python)")"
+    else
+      log_warn "$(printf '%-11s missing from shims (run ./bootstrap.sh python)' "python")"
+    fi
+    while IFS= read -r ver; do
+      [ -n "$ver" ] || continue
+      log_success "$(printf '%-11s %s' "installed" "$ver")"
+    done < <(pyenv versions --bare 2>/dev/null || true)
+  else
+    log_warn "pyenv        missing"
+  fi
 
   printf '\n    Identity\n'
   if command_exists git; then

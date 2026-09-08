@@ -98,6 +98,7 @@ macos_bootstrap_load_config() {
   SETUP_SHELL="${SETUP_SHELL:-true}"
   SETUP_GIT="${SETUP_GIT:-true}"
   SETUP_SSH="${SETUP_SSH:-true}"
+  SETUP_PYTHON="${SETUP_PYTHON:-true}"
   LINK_DOTFILES="${LINK_DOTFILES:-true}"
 
   MACOS_DOCK_AUTOHIDE="${MACOS_DOCK_AUTOHIDE:-true}"
@@ -106,6 +107,9 @@ macos_bootstrap_load_config() {
   MACOS_TAP_TO_CLICK="${MACOS_TAP_TO_CLICK:-true}"
   # Empty means skip; unset defaults to firefox.
   MACOS_DEFAULT_BROWSER="${MACOS_DEFAULT_BROWSER-firefox}"
+  # Empty means skip; unset defaults to the latest stable CPython 3.x.
+  PYENV_PYTHON_VERSION="${PYENV_PYTHON_VERSION-latest}"
+  PYENV_PYTHON_EXTRA_VERSIONS="${PYENV_PYTHON_EXTRA_VERSIONS-3.9 3.10 3.11 3.12 3.13 3.14}"
 }
 
 # --- run wrappers ---------------------------------------------------------
@@ -155,6 +159,16 @@ require_macos() {
     return 0
   fi
   die "This bootstrap is for macOS. Found $(uname -s)."
+}
+
+# Ensure pyenv shims are on PATH for this process.
+eval_pyenv() {
+  export PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"
+  eval_brew_shellenv
+  if command_exists pyenv; then
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+  fi
 }
 
 # Ensure Homebrew is on PATH for the rest of this process (Apple Silicon + Intel).
