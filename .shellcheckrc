@@ -1,0 +1,8 @@
+# Repo-root ShellCheck config (used by ./scripts/check.sh)
+shell=bash
+external-sources=true
+
+# `return 0 2>/dev/null || exit 0` lets a file be sourced or executed.
+disable=SC2317
+# Modules source "$MACOS_BOOTSTRAP_ROOT/lib/common.sh" (resolved at runtime).
+disable=SC1091

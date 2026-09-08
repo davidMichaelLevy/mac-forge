@@ -17,7 +17,6 @@ source "$MACOS_BOOTSTRAP_ROOT/lib/common.sh"
 SKIP_OS_CHECK=false
 LIST_ONLY=false
 RUN_DOCTOR=false
-SELECTED=""
 
 usage() {
   cat <<'EOF'
@@ -219,19 +218,6 @@ if [ "$RUN_DOCTOR" = true ]; then
   exit 0
 fi
 
-if [ "$SKIP_OS_CHECK" != true ]; then
-  require_macos
-fi
-
-print_banner
-log_info "Root: $MACOS_BOOTSTRAP_ROOT"
-if [ -n "${COMPUTER_NAME:-}" ]; then
-  log_info "Computer name: $COMPUTER_NAME"
-fi
-if [ -n "${GIT_USER_NAME:-}" ]; then
-  log_info "Git: $GIT_USER_NAME <$GIT_USER_EMAIL>"
-fi
-
 MODULE_QUEUE=""
 if [ $# -gt 0 ]; then
   while [ $# -gt 0 ]; do
@@ -246,6 +232,19 @@ else
   for path in $(list_module_files); do
     MODULE_QUEUE="$MODULE_QUEUE $path"
   done
+fi
+
+if [ "$SKIP_OS_CHECK" != true ]; then
+  require_macos
+fi
+
+print_banner
+log_info "Root: $MACOS_BOOTSTRAP_ROOT"
+if [ -n "${COMPUTER_NAME:-}" ]; then
+  log_info "Computer name: $COMPUTER_NAME"
+fi
+if [ -n "${GIT_USER_NAME:-}" ]; then
+  log_info "Git: $GIT_USER_NAME <$GIT_USER_EMAIL>"
 fi
 
 log_step "Plan"

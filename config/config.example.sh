@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+# shellcheck disable=SC2034
 # Copy this file to config.sh and edit. config.sh is gitignored.
 
 # --- identity -------------------------------------------------------------

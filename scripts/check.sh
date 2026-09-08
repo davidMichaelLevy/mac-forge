@@ -34,12 +34,12 @@ fi
 
 if command -v shellcheck >/dev/null 2>&1; then
   echo "==> shellcheck"
-  if ! shellcheck --shell=bash --external-sources \
+  if ! (cd "$ROOT" && shellcheck --source-path="$ROOT" \
     "$ROOT/bootstrap.sh" \
     "$ROOT/lib/common.sh" \
     "$ROOT/scripts/check.sh" \
     "$ROOT/modules/"*.sh \
-    "$ROOT/config/config.example.sh"; then
+    "$ROOT/config/config.example.sh"); then
     fail=1
   fi
 else
