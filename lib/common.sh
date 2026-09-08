@@ -104,6 +104,8 @@ macos_bootstrap_load_config() {
   MACOS_KEY_REPEAT_FAST="${MACOS_KEY_REPEAT_FAST:-true}"
   MACOS_SHOW_HIDDEN_FILES="${MACOS_SHOW_HIDDEN_FILES:-true}"
   MACOS_TAP_TO_CLICK="${MACOS_TAP_TO_CLICK:-true}"
+  # Empty means skip; unset defaults to firefox.
+  MACOS_DEFAULT_BROWSER="${MACOS_DEFAULT_BROWSER-firefox}"
 }
 
 # --- run wrappers ---------------------------------------------------------

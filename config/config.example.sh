@@ -34,3 +34,6 @@ MACOS_DOCK_AUTOHIDE=true
 MACOS_KEY_REPEAT_FAST=true
 MACOS_SHOW_HIDDEN_FILES=true
 MACOS_TAP_TO_CLICK=true
+# HTTP/HTTPS handler (defaultbrowser name: firefox, chrome, safari).
+# Leave empty to leave the current default alone.
+MACOS_DEFAULT_BROWSER="firefox"

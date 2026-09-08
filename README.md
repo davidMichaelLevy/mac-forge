@@ -11,7 +11,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `prereqs` | Xcode Command Line Tools, Rosetta 2 on Apple Silicon |
 | `homebrew` | Installs Homebrew if missing, then `brew update` |
 | `packages` | Installs everything in `config/Brewfile` (CLI, apps, fonts) |
-| `macos` | Finder, Dock, keyboard, trackpad, screenshots, firewall, Safari develop menu |
+| `macos` | Finder, Dock, keyboard, trackpad, screenshots, firewall, Safari develop menu, Firefox as default browser |
 | `shell` | Confirms **zsh** is the login shell; registers Homebrew bash in `/etc/shells` |
 | `git` | Name, email, `main` as default branch, rebase-on-pull, useful aliases |
 | `ssh` | `ed25519` key, macOS Keychain agent, prints the public key for GitHub |
@@ -61,7 +61,7 @@ Open a **new terminal** when it finishes so PATH, zsh, and Starship pick up the 
 
 Nothing in the scripts is meant to be edited for day-to-day taste. Change these instead:
 
-1. **`config/config.sh`** — identity, which modules run, Dock autohide, fast key repeat, hidden files, tap-to-click.
+1. **`config/config.sh`** — identity, which modules run, Dock autohide, fast key repeat, hidden files, tap-to-click, default browser.
 2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids.
 3. **`dotfiles/`** — zsh, Starship, and the global gitignore. They are symlinked; edit them in this repo.
 4. **`~/.zshrc.local`** — machine-only aliases and secrets. The linked `~/.zshrc` sources it if present.

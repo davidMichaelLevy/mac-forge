@@ -29,6 +29,7 @@ brew "emacs"
 brew "starship"
 brew "shellcheck"
 brew "shfmt"
+brew "defaultbrowser"  # set the default HTTP handler from the macos module
 
 # --- CLI: GNU replacements (macOS ships older BSD variants) ---------------
 brew "coreutils"

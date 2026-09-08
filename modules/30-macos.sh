@@ -141,6 +141,88 @@ apply_safari() {
   defaults_write NSGlobalDomain WebKitDeveloperExtras -bool true
 }
 
+confirm_default_browser_dialog() {
+  # macOS shows a "Use Firefox?" prompt; click it when Accessibility allows.
+  osascript >/dev/null 2>&1 <<'APPLESCRIPT'
+tell application "System Events"
+  set endTime to (current date) + 8
+  repeat until (current date) is greater than endTime
+    tell process "CoreServicesUIAgent"
+      if exists window 1 then
+        repeat with b in buttons of window 1
+          try
+            if (name of b as text) contains "Use" then
+              click b
+              return
+            end if
+          end try
+        end repeat
+      end if
+    end tell
+    delay 0.15
+  end repeat
+end tell
+APPLESCRIPT
+}
+
+register_browser_app() {
+  local want="$1"
+  local app=""
+  local lsregister="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
+
+  case "$want" in
+    firefox) app="/Applications/Firefox.app" ;;
+    chrome) app="/Applications/Google Chrome.app" ;;
+    safari) app="/Applications/Safari.app" ;;
+    brave|browser) app="/Applications/Brave Browser.app" ;;
+  esac
+
+  if [ -n "$app" ] && [ -d "$app" ] && [ -x "$lsregister" ]; then
+    run_ok "$lsregister" -f "$app"
+  fi
+}
+
+apply_default_browser() {
+  local want current dialog_pid
+  want="${MACOS_DEFAULT_BROWSER:-}"
+  if [ -z "$want" ]; then
+    return 0
+  fi
+
+  log_info "Default browser: $want"
+  eval_brew_shellenv
+
+  if is_dry_run; then
+    log_dim "[dry-run] defaultbrowser $want"
+    return 0
+  fi
+
+  if ! command_exists defaultbrowser; then
+    log_warn "defaultbrowser not installed; run ./bootstrap.sh packages first"
+    return 0
+  fi
+
+  register_browser_app "$want"
+
+  current="$(defaultbrowser 2>/dev/null | awk '/^\*/ { print $2; exit }' || true)"
+  if [ "$current" = "$want" ]; then
+    log_success "$want is already the default HTTP handler"
+    return 0
+  fi
+
+  confirm_default_browser_dialog &
+  dialog_pid=$!
+  if defaultbrowser "$want"; then
+    wait "$dialog_pid" 2>/dev/null || true
+    log_success "Default browser set to $want"
+    log_dim "If macOS still shows a confirmation dialog, click Use \"$want\"."
+  else
+    kill "$dialog_pid" 2>/dev/null || true
+    wait "$dialog_pid" 2>/dev/null || true
+    log_warn "Could not set default browser to $want (install it, then re-run)."
+  fi
+}
+
 apply_security() {
   log_info "Security"
   defaults_write com.apple.screensaver askForPassword -int 1
@@ -186,6 +268,7 @@ apply_screenshots
 apply_finder
 apply_dock
 apply_safari
+apply_default_browser
 apply_security
 apply_apps
 restart_ui
