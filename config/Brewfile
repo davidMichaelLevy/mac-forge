@@ -54,13 +54,17 @@ cask "rectangle"
 cask "raycast"
 cask "cursor"
 cask "visual-studio-code"
-cask "firefox"
-cask "google-chrome"
 cask "1password"
 cask "appcleaner"
 cask "iina"
 cask "stats"
 cask "keka"
+
+# --- browsers -------------------------------------------------------------
+cask "firefox"
+cask "google-chrome"
+cask "brave-browser"
+cask "tor-browser"
 
 # Optional extras — uncomment as needed:
 # cask "orbstack"

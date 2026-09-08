@@ -17,7 +17,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `ssh` | `ed25519` key, macOS Keychain agent, prints the public key for GitHub |
 | `dotfiles` | Symlinks zsh, gitignore, EditorConfig, and Starship into `$HOME` |
 
-Default apps from the Brewfile include Ghostty, Rectangle, Raycast, Cursor, VS Code, Firefox, Chrome, 1Password, IINA, Stats, and Keka. Edit the file before the first run if you want a leaner machine.
+Default apps from the Brewfile include Ghostty, Rectangle, Raycast, Cursor, VS Code, Firefox, Chrome, Brave, Tor Browser, 1Password, IINA, Stats, and Keka. Edit the file before the first run if you want a leaner machine.
 
 ## Requirements
 
