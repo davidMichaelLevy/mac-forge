@@ -14,6 +14,8 @@ export MACOS_BOOTSTRAP_ROOT
 # shellcheck source=lib/common.sh
 source "$MACOS_BOOTSTRAP_ROOT/lib/common.sh"
 
+macos_bootstrap_adopt_sudo_identity
+
 SKIP_OS_CHECK=false
 LIST_ONLY=false
 RUN_DOCTOR=false

@@ -162,6 +162,56 @@ require_macos() {
   die "This bootstrap is for macOS. Found $(uname -s)."
 }
 
+# sudo(8) sets euid to 0. That is not a root login; SUDO_USER is the real account.
+running_via_sudo() {
+  [ "$(id -u)" -eq 0 ] && [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ]
+}
+
+macos_bootstrap_login_user() {
+  if running_via_sudo; then
+    printf '%s' "$SUDO_USER"
+  else
+    id -un
+  fi
+}
+
+# When invoked as `sudo ./bootstrap.sh`, keep privileges but use the caller's
+# HOME/USER so git, pyenv, and dotfiles do not land in /var/root.
+macos_bootstrap_adopt_sudo_identity() {
+  local home
+
+  if [ "$(id -u)" -ne 0 ]; then
+    return 0
+  fi
+
+  if ! running_via_sudo; then
+    die "Logged in as root with no SUDO_USER. Run: sudo -u YOUR_USER $0 (or sudo ./bootstrap.sh from your account)."
+  fi
+
+  home="$(eval "echo ~${SUDO_USER}")"
+  if [ -z "$home" ] || [ ! -d "$home" ]; then
+    die "Could not resolve home directory for ${SUDO_USER}"
+  fi
+
+  export USER="$SUDO_USER"
+  export LOGNAME="$SUDO_USER"
+  export HOME="$home"
+  log_info "sudo as ${SUDO_USER} (HOME=$HOME)"
+}
+
+# Homebrew/pyenv refuse euid 0. Run those tools as the login user under sudo.
+run_user() {
+  if is_dry_run; then
+    log_dim "[dry-run] $*"
+    return 0
+  fi
+  if running_via_sudo; then
+    sudo -u "$SUDO_USER" -H -- "$@"
+  else
+    "$@"
+  fi
+}
+
 # Ensure pyenv shims are on PATH for this process.
 eval_pyenv() {
   export PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"
@@ -221,6 +271,9 @@ _SUDO_KEEPALIVE_PID=""
 
 macos_bootstrap_sudo_start() {
   if is_dry_run; then
+    return 0
+  fi
+  if [ "$(id -u)" -eq 0 ]; then
     return 0
   fi
   sudo -v

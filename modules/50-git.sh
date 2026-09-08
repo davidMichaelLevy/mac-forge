@@ -18,7 +18,7 @@ if ! command_exists git && ! is_dry_run; then
 fi
 
 git_global() {
-  run git config --global "$@"
+  run_user git config --global "$@"
 }
 
 if [ -n "${GIT_USER_NAME:-}" ]; then

@@ -64,12 +64,12 @@ install_cpython() {
     log_success "Python $version already installed"
   else
     log_info "Installing Python $version via pyenv (compiles from source; may take a few minutes)"
-    run pyenv install --skip-existing "$version"
+    run_user pyenv install --skip-existing "$version"
   fi
 
   if [ -x "${PYENV_ROOT}/versions/${version}/bin/python" ]; then
     log_info "Upgrading pip, setuptools, and wheel for $version"
-    run env PYENV_VERSION="$version" pyenv exec pip install --upgrade pip setuptools wheel
+    run_user env PYENV_VERSION="$version" pyenv exec pip install --upgrade pip setuptools wheel
   fi
 }
 
@@ -95,8 +95,8 @@ if [ -n "$want" ]; then
   if [ "$current" = "$global_version" ]; then
     log_success "pyenv global is already $global_version"
   else
-    run pyenv global "$global_version"
-    run pyenv rehash
+    run_user pyenv global "$global_version"
+    run_user pyenv rehash
     log_success "pyenv global = $global_version"
   fi
 fi
@@ -116,7 +116,7 @@ if [ -n "$extras" ]; then
     fi
     install_cpython "$extra_version"
   done
-  run pyenv rehash
+  run_user pyenv rehash
 fi
 
 eval_pyenv

@@ -13,13 +13,13 @@ eval_brew_shellenv
 if command_exists brew; then
   log_success "Homebrew already installed ($(brew --prefix))"
   log_info "Updating Homebrew"
-  run brew update --quiet
+  run_user brew update --quiet
 else
   log_info "Installing Homebrew (you may be prompted for your password)."
   if is_dry_run; then
     log_dim "[dry-run] Homebrew install script"
   else
-    NONINTERACTIVE=1 /bin/bash -c \
+    run_user env NONINTERACTIVE=1 /bin/bash -c \
       "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
   eval_brew_shellenv

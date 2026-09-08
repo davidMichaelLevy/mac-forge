@@ -9,6 +9,14 @@
 #
 set -euo pipefail
 
+# sudo sets euid 0; that is not a root login. Use the caller's home.
+if [ "$(id -u)" -eq 0 ] && [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ]; then
+  USER="$SUDO_USER"
+  LOGNAME="$SUDO_USER"
+  HOME="$(eval "echo ~${SUDO_USER}")"
+  export USER LOGNAME HOME
+fi
+
 REPO_SLUG="${MAC_FORGE_REPO:-davidMichaelLevy/mac-forge}"
 REF="${MAC_FORGE_REF:-main}"
 DEST="${MAC_FORGE_DIR:-$HOME/mac-forge}"

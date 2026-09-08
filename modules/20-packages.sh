@@ -31,5 +31,5 @@ fi
 
 log_info "Installing from $BREWFILE"
 # shellcheck disable=SC2086
-run brew bundle $BUNDLE_ARGS
+run_user brew bundle $BUNDLE_ARGS
 log_success "Brewfile applied"
