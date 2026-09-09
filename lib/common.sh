@@ -122,6 +122,12 @@ macos_bootstrap_load_config() {
   if ! declare -p MACOS_KEEP_APPS >/dev/null 2>&1; then
     MACOS_KEEP_APPS=()
   fi
+  if ! declare -p EXCLUSIVE_CASK_SETS >/dev/null 2>&1; then
+    EXCLUSIVE_CASK_SETS=("docker-desktop|orbstack")
+  fi
+  if ! declare -p EXCLUSIVE_CASK_CHOICES >/dev/null 2>&1; then
+    EXCLUSIVE_CASK_CHOICES=()
+  fi
 }
 
 # --- run wrappers ---------------------------------------------------------

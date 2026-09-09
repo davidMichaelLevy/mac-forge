@@ -10,7 +10,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | --- | --- |
 | `prereqs` | Xcode Command Line Tools, Rosetta 2 on Apple Silicon |
 | `homebrew` | Installs Homebrew if missing, then `brew update` |
-| `packages` | Installs everything in `config/Brewfile` (CLI, apps, fonts) |
+| `packages` | Installs everything in `config/Brewfile`, then exclusive cask sets (Docker Desktop or OrbStack) |
 | `python` | Installs CPython with pyenv (global + extra 3.x versions), upgrades pip |
 | `macos` | Finder, Dock, keyboard, trackpad, screenshots, firewall, Safari develop menu, Firefox as default browser |
 | `preinstalled` | Uninstall optional Apple apps; unpin required Apple apps from the Dock; `MACOS_KEEP_APPS` is left alone |
@@ -19,7 +19,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `ssh` | `ed25519` key, macOS Keychain agent, prints the public key for GitHub |
 | `dotfiles` | Symlinks zsh, gitignore, EditorConfig, and Starship into `$HOME` |
 
-Default apps from the Brewfile include Ghostty, Rectangle, Raycast, Cursor, PyCharm, VS Code, Meld, Firefox, Chrome, Brave, Tor Browser, Bitwarden, Signal, Slack, Docker Desktop, IINA, TIDAL, Tappie, Stats, and Keka. Edit the file before the first run if you want a leaner machine.
+Default apps from the Brewfile include Ghostty, Rectangle, Raycast, Cursor, PyCharm, VS Code, Meld, Firefox, Chrome, Brave, Tor Browser, Bitwarden, Signal, Slack, IINA, TIDAL, Tappie, Stats, and Keka. Docker Desktop or OrbStack is chosen with `EXCLUSIVE_CASK_CHOICES` in config (not both).
 
 ## Requirements
 
@@ -63,8 +63,8 @@ Open a **new terminal** when it finishes so PATH, zsh, and Starship pick up the 
 
 Nothing in the scripts is meant to be edited for day-to-day taste. Change these instead:
 
-1. **`config/config.sh`** — identity, which modules run, Dock autohide, fast key repeat, hidden files, tap-to-click, scroll direction, default browser, optional/required/keep Apple app lists, Python version.
-2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids.
+1. **`config/config.sh`** — identity, which modules run, exclusive cask choices (Docker Desktop vs OrbStack), Dock autohide, fast key repeat, hidden files, tap-to-click, scroll direction, default browser, optional/required/keep Apple app lists, Python version.
+2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids. Exclusive pairs (Docker vs OrbStack) are not listed here; they come from config.
 3. **`dotfiles/`** — zsh, Starship, and the global gitignore. They are symlinked; edit them in this repo.
 4. **`~/.zshrc.local`** — machine-only aliases and secrets. The linked `~/.zshrc` sources it if present.
 

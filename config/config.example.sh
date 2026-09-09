@@ -31,6 +31,22 @@ LINK_DOTFILES=true
 # Off until the preinstalled module is ready.
 REMOVE_PREINSTALLED_APPS=false
 
+# --- exclusive casks (used when INSTALL_CASKS=true) -----------------------
+
+# Exclusive groups of Homebrew cask tokens (pipe-separated). Exactly one
+# member is kept; the others are uninstalled if present. Put the token to
+# keep in EXCLUSIVE_CASK_CHOICES. If a set has no matching choice, the first
+# member is used.
+#
+# docker-desktop vs orbstack: OrbStack is a lighter Docker Desktop replacement
+# (same `docker` CLI). Free for personal use; company use needs a paid license.
+EXCLUSIVE_CASK_SETS=(
+  "docker-desktop|orbstack"
+)
+EXCLUSIVE_CASK_CHOICES=(
+  docker-desktop
+)
+
 # --- macos defaults (used when APPLY_MACOS_DEFAULTS=true) -----------------
 
 MACOS_DOCK_AUTOHIDE=true
