@@ -67,6 +67,7 @@ cask "slack"
 cask "docker-desktop"
 cask "appcleaner"
 cask "iina"
+cask "tidal"
 cask "stats"
 cask "keka"
 
