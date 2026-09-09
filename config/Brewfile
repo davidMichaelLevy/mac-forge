@@ -58,6 +58,8 @@ brew "mas"
 # --- apps -----------------------------------------------------------------
 cask "empiricapps/zenithal/tappie", trusted: true
 cask "ghostty"
+cask "kitty"
+cask "iterm2"
 cask "rectangle"
 cask "raycast"
 cask "cursor"
