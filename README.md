@@ -13,6 +13,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `packages` | Installs everything in `config/Brewfile` (CLI, apps, fonts) |
 | `python` | Installs CPython with pyenv (global + extra 3.x versions), upgrades pip |
 | `macos` | Finder, Dock, keyboard, trackpad, screenshots, firewall, Safari develop menu, Firefox as default browser |
+| `preinstalled` | Uninstall optional Apple apps; unpin required Apple apps from the Dock; `MACOS_KEEP_APPS` is left alone |
 | `shell` | Confirms **zsh** is the login shell; registers Homebrew bash in `/etc/shells` |
 | `git` | Name, email, `main` as default branch, rebase-on-pull, Meld as diff/merge tool |
 | `ssh` | `ed25519` key, macOS Keychain agent, prints the public key for GitHub |
@@ -62,7 +63,7 @@ Open a **new terminal** when it finishes so PATH, zsh, and Starship pick up the 
 
 Nothing in the scripts is meant to be edited for day-to-day taste. Change these instead:
 
-1. **`config/config.sh`** — identity, which modules run, Dock autohide, fast key repeat, hidden files, tap-to-click, scroll direction, default browser, Python version.
+1. **`config/config.sh`** — identity, which modules run, Dock autohide, fast key repeat, hidden files, tap-to-click, scroll direction, default browser, optional/required/keep Apple app lists, Python version.
 2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids.
 3. **`dotfiles/`** — zsh, Starship, and the global gitignore. They are symlinked; edit them in this repo.
 4. **`~/.zshrc.local`** — machine-only aliases and secrets. The linked `~/.zshrc` sources it if present.

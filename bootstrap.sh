@@ -41,6 +41,7 @@ Modules (all of them, in order, if you omit the list):
   packages    Brewfile formulae, casks, and fonts
   python      Install CPython with pyenv (global plus extra versions)
   macos       Finder, Dock, keyboard, screenshots, and other defaults
+  preinstalled Uninstall optional Apple apps; unpin the rest from the Dock
   shell       Make sure zsh is the login shell
   git         Global identity, sane defaults, Meld as diff/merge tool
   ssh         ed25519 key plus macOS keychain agent

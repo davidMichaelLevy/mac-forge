@@ -28,6 +28,8 @@ SETUP_GIT=true
 SETUP_SSH=true
 SETUP_PYTHON=true
 LINK_DOTFILES=true
+# Off until the preinstalled module is ready.
+REMOVE_PREINSTALLED_APPS=false
 
 # --- macos defaults (used when APPLY_MACOS_DEFAULTS=true) -----------------
 
@@ -40,6 +42,90 @@ MACOS_NATURAL_SCROLL=false
 # HTTP/HTTPS handler (defaultbrowser name: firefox, chrome, safari).
 # Leave empty to leave the current default alone.
 MACOS_DEFAULT_BROWSER="firefox"
+
+# Apple apps that ship on a new Mac. Names match the .app bundle (no .app suffix).
+# Optional: Data volume, /Applications, Finder will Move to Trash, App Store reinstall.
+MACOS_OPTIONAL_APPS=(
+  GarageBand
+  iMovie
+  Keynote
+  Numbers
+  Pages
+)
+# Keep: if a name is also in a remove list, do not uninstall it and do not
+# unpin it from the Dock. Names that are only here (not on a remove list) are
+# ignored; that is not an error.
+MACOS_KEEP_APPS=(
+)
+# Non-optional: sealed system volume. Finder refuses delete; SIP / SSV protect them.
+MACOS_NONOPTIONAL_APPS=(
+  "Activity Monitor"
+  "AirPort Utility"
+  "Apple Games"
+  "App Store"
+  Apps
+  "Audio MIDI Setup"
+  Automator
+  "Bluetooth File Exchange"
+  Books
+  "Boot Camp Assistant"
+  Calculator
+  Calendar
+  Chess
+  Clock
+  "ColorSync Utility"
+  Console
+  Contacts
+  Dictionary
+  "Digital Color Meter"
+  "Directory Utility"
+  "Disk Utility"
+  "DVD Player"
+  FaceTime
+  "Find My"
+  Finder
+  "Font Book"
+  Freeform
+  Grapher
+  Home
+  "Image Capture"
+  "Image Playground"
+  "iPhone Mirroring"
+  Journal
+  Magnifier
+  Mail
+  Maps
+  Messages
+  "Migration Assistant"
+  Music
+  News
+  Notes
+  Passwords
+  Phone
+  "Photo Booth"
+  Photos
+  Podcasts
+  Preview
+  "Print Center"
+  "QuickTime Player"
+  Reminders
+  Safari
+  "Screen Sharing"
+  Screenshot
+  "Script Editor"
+  Shortcuts
+  Stickies
+  Stocks
+  "System Information"
+  "System Settings"
+  Terminal
+  TextEdit
+  Tips
+  TV
+  "Voice Memos"
+  "VoiceOver Utility"
+  Weather
+)
 
 # --- python (used when SETUP_PYTHON=true) ---------------------------------
 

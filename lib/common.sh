@@ -100,6 +100,7 @@ macos_bootstrap_load_config() {
   SETUP_SSH="${SETUP_SSH:-true}"
   SETUP_PYTHON="${SETUP_PYTHON:-true}"
   LINK_DOTFILES="${LINK_DOTFILES:-true}"
+  REMOVE_PREINSTALLED_APPS="${REMOVE_PREINSTALLED_APPS:-false}"
 
   MACOS_DOCK_AUTOHIDE="${MACOS_DOCK_AUTOHIDE:-true}"
   MACOS_KEY_REPEAT_FAST="${MACOS_KEY_REPEAT_FAST:-true}"
@@ -111,6 +112,16 @@ macos_bootstrap_load_config() {
   # Empty means skip; unset defaults to the latest stable CPython 3.x.
   PYENV_PYTHON_VERSION="${PYENV_PYTHON_VERSION-latest}"
   PYENV_PYTHON_EXTRA_VERSIONS="${PYENV_PYTHON_EXTRA_VERSIONS-3.9 3.10 3.11 3.12 3.13 3.14}"
+
+  if ! declare -p MACOS_OPTIONAL_APPS >/dev/null 2>&1; then
+    MACOS_OPTIONAL_APPS=()
+  fi
+  if ! declare -p MACOS_NONOPTIONAL_APPS >/dev/null 2>&1; then
+    MACOS_NONOPTIONAL_APPS=()
+  fi
+  if ! declare -p MACOS_KEEP_APPS >/dev/null 2>&1; then
+    MACOS_KEEP_APPS=()
+  fi
 }
 
 # --- run wrappers ---------------------------------------------------------
