@@ -261,8 +261,19 @@ fi
 
 print_banner
 log_info "Root: $MACOS_BOOTSTRAP_ROOT"
-if [ -n "${COMPUTER_NAME:-}" ]; then
-  log_info "Computer name: $COMPUTER_NAME"
+if is_truthy "${SET_MACHINE_NAMES:-true}"; then
+  macos_bootstrap_resolve_machine_names
+  if [ -n "${MACOS_RESOLVED_COMPUTER_NAME:-}" ]; then
+    log_info "ComputerName: $MACOS_RESOLVED_COMPUTER_NAME"
+  fi
+  if [ -n "${HOST_NAME:-}" ]; then
+    log_info "HostName: $MACOS_RESOLVED_HOST_NAME (override)"
+  fi
+  if [ -n "${LOCAL_HOST_NAME:-}" ]; then
+    log_info "LocalHostName: $MACOS_RESOLVED_LOCAL_HOST_NAME (override)"
+  fi
+else
+  log_info "Machine names: leave current"
 fi
 if [ -n "${GIT_USER_NAME:-}" ]; then
   log_info "Git: $GIT_USER_NAME <$GIT_USER_EMAIL>"

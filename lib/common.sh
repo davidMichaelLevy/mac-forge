@@ -88,6 +88,9 @@ macos_bootstrap_load_config() {
   GIT_USER_NAME="${GIT_USER_NAME:-}"
   GIT_USER_EMAIL="${GIT_USER_EMAIL:-}"
   COMPUTER_NAME="${COMPUTER_NAME:-}"
+  HOST_NAME="${HOST_NAME:-}"
+  LOCAL_HOST_NAME="${LOCAL_HOST_NAME:-}"
+  SET_MACHINE_NAMES="${SET_MACHINE_NAMES:-true}"
   SSH_KEY_TYPE="${SSH_KEY_TYPE:-ed25519}"
   SSH_KEY_COMMENT="${SSH_KEY_COMMENT:-$GIT_USER_EMAIL}"
 
@@ -190,6 +193,152 @@ macos_bootstrap_login_user() {
   else
     id -un
   fi
+}
+
+# Spaces (and other whitespace) to hyphens; squeeze and trim hyphens. Keep case.
+macos_spaces_to_hyphens() {
+  printf '%s' "${1:-}" | tr -s '[:space:]' '-' | sed -E 's/-+/-/g; s/^-//; s/-$//'
+}
+
+# Bonjour LocalHostName: lowercase [a-z0-9-].
+macos_bonjour_slug() {
+  printf '%s' "${1:-}" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed -E 's/-+/-/g; s/^-//; s/-$//'
+}
+
+# About This Mac string → no "inch", no parens/commas, no spaces.
+macos_normalize_marketing() {
+  local s="${1:-}"
+  s="$(printf '%s' "$s" | sed -E 's/([0-9]+)-[Ii]nch/\1in/g; s/([0-9]+) [Ii]nch/\1in/g')"
+  s="$(printf '%s' "$s" | tr -d '(),')"
+  macos_spaces_to_hyphens "$s"
+}
+
+macos_hardware_serial() {
+  local s=""
+  if command_exists ioreg; then
+    s="$(ioreg -c IOPlatformExpertDevice -d 2 2>/dev/null | awk -F'"' '/IOPlatformSerialNumber/{print $4; exit}')"
+  fi
+  if [ -z "$s" ] && command_exists system_profiler; then
+    s="$(system_profiler SPHardwareDataType 2>/dev/null | awk -F': ' '/Serial Number/{print $2; exit}' | tr -d '[:space:]')"
+  fi
+  printf '%s' "$s"
+}
+
+macos_hardware_model_name() {
+  command_exists system_profiler || return 1
+  system_profiler SPHardwareDataType 2>/dev/null | awk -F': ' '/^ *Model Name:/{print $2; exit}'
+}
+
+# About This Mac marketing string from the login user's SystemProfiler plist.
+macos_cpu_names_marketing() {
+  local serial4="${1:-}"
+  local plist="$HOME/Library/Preferences/com.apple.SystemProfiler.plist"
+  [ -f "$plist" ] || return 1
+  command_exists python3 || return 1
+  python3 -c '
+import plistlib, sys
+path, serial4 = sys.argv[1], sys.argv[2]
+try:
+    with open(path, "rb") as f:
+        data = plistlib.load(f)
+except Exception:
+    sys.exit(1)
+names = data.get("CPU Names") or {}
+if not isinstance(names, dict) or not names:
+    sys.exit(1)
+
+def usable(v):
+    return isinstance(v, str) and v.strip()
+
+serial_hits = []
+en_hits = []
+any_hits = []
+for k, v in names.items():
+    if not usable(v):
+        continue
+    any_hits.append(v.strip())
+    key = str(k)
+    if serial4 and key.startswith(serial4 + "-"):
+        serial_hits.append(v.strip())
+        if "-en-" in key:
+            en_hits.append(v.strip())
+if en_hits:
+    print(en_hits[0])
+elif serial_hits:
+    print(serial_hits[0])
+elif any_hits:
+    print(any_hits[0])
+else:
+    sys.exit(1)
+' "$plist" "$serial4"
+}
+
+macos_generate_computer_name() {
+  local login marketing serial serial4 body
+  login="$(macos_bootstrap_login_user)"
+  [ -n "$login" ] || return 1
+
+  serial="$(macos_hardware_serial)"
+  serial4=""
+  if [ -n "$serial" ] && [ "${#serial}" -ge 4 ]; then
+    serial4="${serial: -4}"
+  elif [ -n "$serial" ]; then
+    serial4="$serial"
+  fi
+
+  marketing="$(macos_cpu_names_marketing "$serial4" 2>/dev/null || true)"
+  if [ -z "$marketing" ]; then
+    marketing="$(macos_hardware_model_name 2>/dev/null || true)"
+  fi
+  if [ -z "$marketing" ]; then
+    log_warn "Could not read Mac marketing name; not generating ComputerName."
+    return 1
+  fi
+  if [ -z "$serial4" ]; then
+    log_warn "Could not read hardware serial; generated name will omit the suffix."
+  fi
+
+  body="$(macos_normalize_marketing "$marketing")"
+  [ -n "$body" ] || return 1
+
+  if [ -n "$serial4" ]; then
+    printf '%s-%s-%s' "$login" "$body" "$serial4"
+  else
+    printf '%s-%s' "$login" "$body"
+  fi
+}
+
+# Sets MACOS_RESOLVED_COMPUTER_NAME, MACOS_RESOLVED_HOST_NAME, MACOS_RESOLVED_LOCAL_HOST_NAME.
+macos_bootstrap_resolve_machine_names() {
+  local computer host local_name generated
+
+  if [ -n "${MACOS_RESOLVED_NAMES_DONE:-}" ]; then
+    return 0
+  fi
+
+  computer="${COMPUTER_NAME:-}"
+  if [ -z "$computer" ]; then
+    generated="$(macos_generate_computer_name || true)"
+    computer="$generated"
+  fi
+  computer="$(macos_spaces_to_hyphens "$computer")"
+
+  if [ -n "${HOST_NAME:-}" ]; then
+    host="$(macos_spaces_to_hyphens "$HOST_NAME")"
+  else
+    host="$computer"
+  fi
+
+  if [ -n "${LOCAL_HOST_NAME:-}" ]; then
+    local_name="$(macos_bonjour_slug "$LOCAL_HOST_NAME")"
+  else
+    local_name="$(macos_bonjour_slug "$computer")"
+  fi
+
+  MACOS_RESOLVED_COMPUTER_NAME="$computer"
+  MACOS_RESOLVED_HOST_NAME="$host"
+  MACOS_RESOLVED_LOCAL_HOST_NAME="$local_name"
+  MACOS_RESOLVED_NAMES_DONE=1
 }
 
 # When invoked as `sudo ./bootstrap.sh`, keep privileges but use the caller's

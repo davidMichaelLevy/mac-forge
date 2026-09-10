@@ -7,9 +7,16 @@
 GIT_USER_NAME="David Levy"
 GIT_USER_EMAIL="david.michael.levy@gmail.com"
 
-# Optional. Sets ComputerName, HostName, and LocalHostName.
-# Leave empty to leave the current name alone.
+# Sharing display name (ComputerName). Empty = generated, e.g.
+# dlevy-MacBook-Pro-16in-2024-X9K2 (login + About This Mac + serial last 4).
+# Spaces are replaced with hyphens. Ignored when SET_MACHINE_NAMES=false.
 COMPUTER_NAME=""
+# Optional. Overrides HostName only. Empty = ComputerName. Spaces become hyphens.
+HOST_NAME=""
+# Optional. Overrides LocalHostName (Bonjour). Empty = slug of ComputerName.
+LOCAL_HOST_NAME=""
+# false = leave ComputerName, HostName, and LocalHostName as they are.
+SET_MACHINE_NAMES=true
 
 # --- ssh ------------------------------------------------------------------
 

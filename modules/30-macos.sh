@@ -37,17 +37,35 @@ quit_system_settings() {
   osascript -e 'tell application "System Preferences" to quit' >/dev/null 2>&1 || true
 }
 
-set_computer_name() {
-  local name="$1"
-  local local_name
-  if [ -z "$name" ]; then
+set_machine_names() {
+  local computer host local_name
+
+  if ! is_truthy "${SET_MACHINE_NAMES:-true}"; then
+    log_info "Leaving ComputerName, HostName, and LocalHostName unchanged"
     return 0
   fi
-  log_info "Computer name: $name"
-  local_name="$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-//;s/-$//')"
-  run sudo scutil --set ComputerName "$name"
-  run sudo scutil --set HostName "$name"
-  run sudo scutil --set LocalHostName "$local_name"
+
+  macos_bootstrap_resolve_machine_names
+  computer="${MACOS_RESOLVED_COMPUTER_NAME:-}"
+  host="${MACOS_RESOLVED_HOST_NAME:-}"
+  local_name="${MACOS_RESOLVED_LOCAL_HOST_NAME:-}"
+
+  if [ -z "$computer" ] && [ -z "$host" ] && [ -z "$local_name" ]; then
+    return 0
+  fi
+
+  if [ -n "$computer" ]; then
+    log_info "ComputerName: $computer"
+    run sudo scutil --set ComputerName "$computer"
+  fi
+  if [ -n "$host" ]; then
+    log_info "HostName: $host"
+    run sudo scutil --set HostName "$host"
+  fi
+  if [ -n "$local_name" ]; then
+    log_info "LocalHostName: $local_name"
+    run sudo scutil --set LocalHostName "$local_name"
+  fi
 }
 
 apply_general() {
@@ -266,7 +284,7 @@ restart_ui() {
 quit_system_settings
 macos_bootstrap_sudo_start
 
-set_computer_name "${COMPUTER_NAME:-}"
+set_machine_names
 apply_general
 apply_keyboard
 apply_trackpad
