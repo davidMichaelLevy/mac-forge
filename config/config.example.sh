@@ -8,7 +8,7 @@ GIT_USER_NAME="David Levy"
 GIT_USER_EMAIL="david.michael.levy@gmail.com"
 
 # Sharing display name (ComputerName). Empty = generated, e.g.
-# dlevy-MacBook-Pro-16in-2024-X9K2 (login + About This Mac + serial last 4).
+# dlevy-MacBook-Pro-16in-2024-X9K2 (login + model + screen + year + serial last 4).
 # Spaces are replaced with hyphens. Ignored when SET_MACHINE_NAMES=false.
 COMPUTER_NAME=""
 # Optional. Overrides HostName only. Empty = ComputerName. Spaces become hyphens.

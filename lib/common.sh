@@ -273,8 +273,55 @@ else:
 ' "$plist" "$serial4"
 }
 
+macos_parse_screen_in() {
+  local s="${1:-}"
+  local piece
+  piece="$(printf '%s' "$s" | grep -oE '[0-9]+(\.[0-9]+)?-[Ii]nch|[0-9]+(\.[0-9]+)? [Ii]nch' | head -1 || true)"
+  [ -n "$piece" ] || return 1
+  printf '%s' "$piece" | sed -E 's/[ -][Ii]nch$/in/'
+}
+
+macos_parse_model_year() {
+  local s="${1:-}"
+  local year
+  year="$(printf '%s' "$s" | grep -oE '20[0-9]{2}' | tail -1 || true)"
+  [ -n "$year" ] || return 1
+  printf '%s' "$year"
+}
+
+macos_builtin_display_in() {
+  command_exists system_profiler || return 1
+  macos_parse_screen_in "$(system_profiler SPDisplaysDataType 2>/dev/null || true)"
+}
+
+# Apple's catalog name for this config code (serial last 4), e.g. MacBook Pro (16-inch, 2024).
+macos_apple_support_marketing() {
+  local cc="${1:-}"
+  local xml name
+  [ -n "$cc" ] || return 1
+  command_exists curl || return 1
+  xml="$(curl -fsSL --max-time 8 "https://support-sp.apple.com/sp/product?cc=${cc}" 2>/dev/null || true)"
+  name="$(printf '%s' "$xml" | sed -n 's/.*<name>\([^<]*\)<\/name>.*/\1/p' | head -1)"
+  name="$(printf '%s' "$name" | sed -E 's/^[[:space:]]+//;s/[[:space:]]+$//')"
+  [ -n "$name" ] || return 1
+  case "$name" in
+    *[Ee]rror*|*[Uu]nknown*) return 1 ;;
+  esac
+  printf '%s' "$name"
+}
+
+macos_marketing_detail_string() {
+  local serial4="${1:-}"
+  local s=""
+  s="$(macos_cpu_names_marketing "$serial4" 2>/dev/null || true)"
+  if [ -z "$s" ]; then
+    s="$(macos_apple_support_marketing "$serial4" || true)"
+  fi
+  printf '%s' "$s"
+}
+
 macos_generate_computer_name() {
-  local login marketing serial serial4 body
+  local login model marketing size year serial serial4 body
   login="$(macos_bootstrap_login_user)"
   [ -n "$login" ] || return 1
 
@@ -286,20 +333,39 @@ macos_generate_computer_name() {
     serial4="$serial"
   fi
 
-  marketing="$(macos_cpu_names_marketing "$serial4" 2>/dev/null || true)"
-  if [ -z "$marketing" ]; then
-    marketing="$(macos_hardware_model_name 2>/dev/null || true)"
+  model="$(macos_hardware_model_name 2>/dev/null || true)"
+  marketing="$(macos_marketing_detail_string "$serial4")"
+  size="$(macos_parse_screen_in "$marketing" 2>/dev/null || true)"
+  if [ -z "$size" ]; then
+    size="$(macos_builtin_display_in 2>/dev/null || true)"
   fi
-  if [ -z "$marketing" ]; then
+  year="$(macos_parse_model_year "$marketing" 2>/dev/null || true)"
+
+  if [ -n "$model" ]; then
+    body="$(macos_spaces_to_hyphens "$model")"
+    [ -n "$size" ] && body="${body}-${size}"
+    [ -n "$year" ] && body="${body}-${year}"
+  elif [ -n "$marketing" ]; then
+    body="$(macos_normalize_marketing "$marketing")"
+  else
     log_warn "Could not read Mac marketing name; not generating ComputerName."
     return 1
   fi
+  [ -n "$body" ] || return 1
+
   if [ -z "$serial4" ]; then
     log_warn "Could not read hardware serial; generated name will omit the suffix."
   fi
-
-  body="$(macos_normalize_marketing "$marketing")"
-  [ -n "$body" ] || return 1
+  case "$model" in
+    *MacBook*|*iMac*)
+      if [ -z "$size" ]; then
+        log_warn "Could not determine screen size for ComputerName."
+      fi
+      ;;
+  esac
+  if [ -z "$year" ]; then
+    log_warn "Could not determine model year for ComputerName."
+  fi
 
   if [ -n "$serial4" ]; then
     printf '%s-%s-%s' "$login" "$body" "$serial4"
