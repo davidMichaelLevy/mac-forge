@@ -89,6 +89,7 @@ apply_clock() {
   local clock="${MACOS_24_HOUR_CLOCK:-}"
 
   if [ -z "$clock" ]; then
+    log_info "Clock: leave current"
     return 0
   fi
 
