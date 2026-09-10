@@ -234,11 +234,20 @@ macos_hardware_model_identifier() {
   system_profiler SPHardwareDataType 2>/dev/null | awk -F': ' '/^ *Model Identifier:/{print $2; exit}'
 }
 
-# Firmware marketing name, e.g. MacBook Pro (16-inch, 2021).
+# Firmware marketing name from ioreg, e.g. MacBook Pro (16-inch, 2021).
+# Same dump as https://www.macosadventures.com/2024/07/16/how-to-get-macbook-display-size-via-script/
 macos_ioreg_product_name() {
   local name=""
   command_exists ioreg || return 1
-  name="$(ioreg -c IOPlatformExpertDevice -d 2 2>/dev/null | awk -F'"' '/"product-name"/{print $4; exit}')"
+  name="$(
+    ioreg -l 2>/dev/null | awk -F'"' '
+      /product-name/ {
+        if ($4 ~ /[0-9]+-inch/) { print $4; found=1; exit }
+        if (!backup && $4 ~ /Mac/) backup = $4
+      }
+      END { if (!found && backup != "") print backup }
+    '
+  )"
   name="$(printf '%s' "$name" | sed -E 's/^[[:space:]]+//;s/[[:space:]]+$//')"
   [ -n "$name" ] || return 1
   printf '%s' "$name"
