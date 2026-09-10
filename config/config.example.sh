@@ -64,6 +64,8 @@ MACOS_DISPLAY_SLEEP_AC=0
 # Aerial as shown in System Settings. Empty = leave the current screensaver.
 MACOS_SCREENSAVER="Antarctica's Southern Lights"
 
+# true = 24-hour, false = 12-hour, empty = leave the current clock.
+MACOS_24_HOUR_CLOCK=true
 MACOS_DOCK_AUTOHIDE=true
 MACOS_KEY_REPEAT_FAST=true
 MACOS_SHOW_HIDDEN_FILES=true

@@ -65,6 +65,13 @@ is_truthy() {
   esac
 }
 
+is_falsy() {
+  case "$(printf '%s' "${1:-}" | tr '[:upper:]' '[:lower:]')" in
+    0|false|no|n|off) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
 is_dry_run() {
   is_truthy "$DRY_RUN"
 }
@@ -118,6 +125,8 @@ macos_bootstrap_load_config() {
   _macos_screensaver_default="Antarctica's Southern Lights"
   MACOS_SCREENSAVER="${MACOS_SCREENSAVER-$_macos_screensaver_default}"
   unset _macos_screensaver_default
+  # Empty or unset = leave the current clock (true = 24-hour, false = 12-hour).
+  MACOS_24_HOUR_CLOCK="${MACOS_24_HOUR_CLOCK-}"
   MACOS_DOCK_AUTOHIDE="${MACOS_DOCK_AUTOHIDE:-true}"
   MACOS_KEY_REPEAT_FAST="${MACOS_KEY_REPEAT_FAST:-true}"
   MACOS_SHOW_HIDDEN_FILES="${MACOS_SHOW_HIDDEN_FILES:-true}"

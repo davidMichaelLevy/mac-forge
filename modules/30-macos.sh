@@ -85,6 +85,40 @@ apply_general() {
   defaults_write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 }
 
+apply_clock() {
+  local clock="${MACOS_24_HOUR_CLOCK:-}"
+
+  if [ -z "$clock" ]; then
+    return 0
+  fi
+
+  if is_truthy "$clock"; then
+    log_info "Clock: 24-hour"
+    defaults_write NSGlobalDomain AppleICUForce24HourTime -bool true
+    defaults_write com.apple.menuextra.clock Show24Hour -bool true
+    defaults_write com.apple.menuextra.clock ShowAMPM -bool false
+    if ! is_dry_run; then
+      defaults delete NSGlobalDomain AppleICUForce12HourTime >/dev/null 2>&1 || true
+      run_ok sudo defaults write /Library/Preferences/.GlobalPreferences.plist AppleICUForce24HourTime -bool true
+    fi
+    return 0
+  fi
+
+  if is_falsy "$clock"; then
+    log_info "Clock: 12-hour"
+    defaults_write NSGlobalDomain AppleICUForce12HourTime -bool true
+    defaults_write com.apple.menuextra.clock Show24Hour -bool false
+    defaults_write com.apple.menuextra.clock ShowAMPM -bool true
+    if ! is_dry_run; then
+      defaults delete NSGlobalDomain AppleICUForce24HourTime >/dev/null 2>&1 || true
+      run_ok sudo defaults write /Library/Preferences/.GlobalPreferences.plist AppleICUForce24HourTime -bool false
+    fi
+    return 0
+  fi
+
+  log_warn "MACOS_24_HOUR_CLOCK=$clock (use true, false, or empty)"
+}
+
 apply_keyboard() {
   log_info "Keyboard"
   if is_truthy "${MACOS_KEY_REPEAT_FAST:-true}"; then
@@ -341,6 +375,7 @@ set_machine_names
 apply_power
 apply_screensaver
 apply_general
+apply_clock
 apply_keyboard
 apply_trackpad
 apply_screenshots
