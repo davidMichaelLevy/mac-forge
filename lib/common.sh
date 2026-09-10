@@ -229,6 +229,11 @@ run_user() {
   fi
 }
 
+# brew as the login user, with progress on long fetches and installs.
+run_brew() {
+  run_user env PATH="$PATH" HOMEBREW_COLOR=1 HOMEBREW_VERBOSE=1 brew "$@"
+}
+
 # Ensure pyenv shims are on PATH for this process.
 eval_pyenv() {
   export PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"

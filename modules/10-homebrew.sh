@@ -45,7 +45,7 @@ install_official_homebrew() {
 if command_exists brew; then
   log_success "Homebrew already installed ($(brew --prefix))"
   log_info "Updating Homebrew"
-  run_user env PATH="$PATH" brew update --quiet
+  run_brew update --verbose
 else
   log_info "Installing Homebrew (you may be prompted for your password)."
   if is_dry_run; then
