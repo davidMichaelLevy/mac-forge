@@ -229,6 +229,31 @@ macos_hardware_model_name() {
   system_profiler SPHardwareDataType 2>/dev/null | awk -F': ' '/^ *Model Name:/{print $2; exit}'
 }
 
+macos_hardware_model_identifier() {
+  command_exists system_profiler || return 1
+  system_profiler SPHardwareDataType 2>/dev/null | awk -F': ' '/^ *Model Identifier:/{print $2; exit}'
+}
+
+# Firmware marketing name, e.g. MacBook Pro (16-inch, 2021).
+macos_ioreg_product_name() {
+  local name=""
+  command_exists ioreg || return 1
+  name="$(ioreg -c IOPlatformExpertDevice -d 2 2>/dev/null | awk -F'"' '/"product-name"/{print $4; exit}')"
+  name="$(printf '%s' "$name" | sed -E 's/^[[:space:]]+//;s/[[:space:]]+$//')"
+  [ -n "$name" ] || return 1
+  printf '%s' "$name"
+}
+
+# Early M-series Airs omit inches in product-name; they are all 13-inch.
+macos_early_m_air_display_in() {
+  local id
+  id="$(macos_hardware_model_identifier 2>/dev/null || true)"
+  case "$id" in
+    MacBookAir10,1|Mac14,2) printf '13in' ;;
+    *) return 1 ;;
+  esac
+}
+
 # About This Mac marketing string from the login user's SystemProfiler plist.
 macos_cpu_names_marketing() {
   local serial4="${1:-}"
@@ -313,7 +338,10 @@ macos_apple_support_marketing() {
 macos_marketing_detail_string() {
   local serial4="${1:-}"
   local s=""
-  s="$(macos_cpu_names_marketing "$serial4" 2>/dev/null || true)"
+  s="$(macos_ioreg_product_name 2>/dev/null || true)"
+  if [ -z "$s" ]; then
+    s="$(macos_cpu_names_marketing "$serial4" 2>/dev/null || true)"
+  fi
   if [ -z "$s" ]; then
     s="$(macos_apple_support_marketing "$serial4" || true)"
   fi
@@ -336,6 +364,9 @@ macos_generate_computer_name() {
   model="$(macos_hardware_model_name 2>/dev/null || true)"
   marketing="$(macos_marketing_detail_string "$serial4")"
   size="$(macos_parse_screen_in "$marketing" 2>/dev/null || true)"
+  if [ -z "$size" ]; then
+    size="$(macos_early_m_air_display_in 2>/dev/null || true)"
+  fi
   if [ -z "$size" ]; then
     size="$(macos_builtin_display_in 2>/dev/null || true)"
   fi
