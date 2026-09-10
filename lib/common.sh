@@ -35,7 +35,7 @@ fi
 log_step()    { printf '\n%s==>%s %s%s%s\n'  "$_c_blue" "$_c_reset" "$_c_bold" "$*" "$_c_reset"; }
 log_info()    { printf '    %s\n' "$*"; }
 log_success() { printf '    %s✓%s %s\n' "$_c_green" "$_c_reset" "$*"; }
-log_warn()    { printf '    %s!%s %s\n' "$_c_yellow" "$_c_reset" "$*"; }
+log_warn()    { printf '    %s!%s %s\n' "$_c_yellow" "$_c_reset" "$*" >&2; }
 log_error()   { printf '    %s✗%s %s\n' "$_c_red" "$_c_reset" "$*" >&2; }
 log_dim()     { printf '    %s%s%s\n' "$_c_dim" "$*" "$_c_reset"; }
 
