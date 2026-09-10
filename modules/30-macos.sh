@@ -247,6 +247,33 @@ apply_default_browser() {
   fi
 }
 
+apply_power() {
+  local battery ac battery_msg ac_msg
+
+  battery="${MACOS_DISPLAY_SLEEP_BATTERY:-10}"
+  ac="${MACOS_DISPLAY_SLEEP_AC:-0}"
+  if [ "$battery" = "0" ]; then
+    battery_msg="never"
+  else
+    battery_msg="${battery} min"
+  fi
+  if [ "$ac" = "0" ]; then
+    ac_msg="never"
+  else
+    ac_msg="${ac} min"
+  fi
+
+  log_info "Power: display sleep $battery_msg on battery, $ac_msg on AC"
+  # 0 = never. On AC, also disable system sleep so the display cannot go dark
+  # because the machine slept.
+  run sudo pmset -b displaysleep "$battery"
+  if [ "$ac" = "0" ]; then
+    run sudo pmset -c displaysleep 0 sleep 0
+  else
+    run sudo pmset -c displaysleep "$ac"
+  fi
+}
+
 apply_security() {
   log_info "Security"
   defaults_write com.apple.screensaver askForPassword -int 1
@@ -285,6 +312,7 @@ quit_system_settings
 macos_bootstrap_sudo_start
 
 set_machine_names
+apply_power
 apply_general
 apply_keyboard
 apply_trackpad

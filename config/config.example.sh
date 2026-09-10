@@ -58,6 +58,10 @@ EXCLUSIVE_CASK_CHOICES=(
 
 # --- macos defaults (used when APPLY_MACOS_DEFAULTS=true) -----------------
 
+# Display sleep in minutes. 0 = never. On AC, 0 also keeps the Mac awake.
+MACOS_DISPLAY_SLEEP_BATTERY=10
+MACOS_DISPLAY_SLEEP_AC=0
+
 MACOS_DOCK_AUTOHIDE=true
 MACOS_KEY_REPEAT_FAST=true
 MACOS_SHOW_HIDDEN_FILES=true
