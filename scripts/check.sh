@@ -7,8 +7,10 @@ fail=0
 
 scripts=(
   "$ROOT/bootstrap.sh"
+  "$ROOT/forge.sh"
   "$ROOT/install.sh"
   "$ROOT/lib/common.sh"
+  "$ROOT/lib/sync.sh"
   "$ROOT/scripts/check.sh"
 )
 
@@ -37,8 +39,10 @@ if command -v shellcheck >/dev/null 2>&1; then
   echo "==> shellcheck"
   if ! (cd "$ROOT" && shellcheck --source-path="$ROOT" \
     "$ROOT/bootstrap.sh" \
+    "$ROOT/forge.sh" \
     "$ROOT/install.sh" \
     "$ROOT/lib/common.sh" \
+    "$ROOT/lib/sync.sh" \
     "$ROOT/scripts/check.sh" \
     "$ROOT/modules/"*.sh \
     "$ROOT/config/config.example.sh"); then

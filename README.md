@@ -9,7 +9,6 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | Module | What it does |
 | --- | --- |
 | `prereqs` | Xcode Command Line Tools, Rosetta 2 on Apple Silicon |
-| `sync` | Make this tree a git checkout if needed, then fast-forward to origin |
 | `homebrew` | Installs Homebrew if missing, then `brew update` |
 | `packages` | Installs everything in `config/Brewfile`, then exclusive cask sets (Docker Desktop or OrbStack) |
 | `python` | Installs CPython with pyenv (global + extra 3.x versions), upgrades pip |
@@ -36,7 +35,7 @@ On a new Mac:
 bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh)
 ```
 
-That downloads a tarball to `~/mac-forge` if needed and runs `bootstrap.sh`. Install never uses git; the `sync` module turns the tree into a checkout and fast-forwards it. Pass-through examples:
+That downloads a tarball to `~/mac-forge` if needed and runs `bootstrap.sh`. Install never uses git; `bootstrap.sh` turns the tree into a checkout and fast-forwards it, then execs `forge.sh` so modules load from the updated tree. Pass-through examples:
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh) --dry-run
@@ -75,6 +74,7 @@ To run a subset:
 ./bootstrap.sh --list
 ./bootstrap.sh packages git
 ./bootstrap.sh -y macos
+./forge.sh macos              # skip sync; apply modules only
 ```
 
 Set `INSTALL_CASKS=false` in config to install CLI formulae only.
@@ -83,8 +83,10 @@ Set `INSTALL_CASKS=false` in config to install CLI formulae only.
 
 ```
 install.sh            Download a tarball if needed and run bootstrap.sh
-bootstrap.sh          Entry point
+bootstrap.sh          Sync this checkout, then exec forge.sh
+forge.sh              Apply modules (skip sync with this directly)
 lib/common.sh         Logging, dry-run, config loader, symlink helper
+lib/sync.sh           Git-init if needed, then fast-forward to origin
 modules/              One numbered script per concern (sourced in order)
 config/Brewfile       Homebrew bundle list
 config/config.example.sh
