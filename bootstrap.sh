@@ -37,6 +37,7 @@ Options:
 
 Modules (all of them, in order, if you omit the list):
   prereqs     Xcode Command Line Tools, Rosetta
+  sync        Git-init if needed, then fast-forward this checkout to origin
   homebrew    Install Homebrew and put it on PATH
   packages    Brewfile formulae, casks, and exclusive sets (Docker or OrbStack)
   python      Install CPython with pyenv (global plus extra versions)
@@ -47,8 +48,8 @@ Modules (all of them, in order, if you omit the list):
   ssh         ed25519 key plus macOS keychain agent
   dotfiles    Symlink shell/editor config into $HOME
 
-Edit config/config.sh (copy from config.example.sh) and config/Brewfile
-before the first real run.
+Edit config/config.sh and config/Brewfile before the first real run.
+bootstrap.sh copies config.example.sh to config.sh if it is missing.
 
 Examples:
   ./bootstrap.sh

@@ -35,6 +35,8 @@ SETUP_GIT=true
 SETUP_SSH=true
 SETUP_PYTHON=true
 LINK_DOTFILES=true
+# Fast-forward this checkout to origin (creates a git repo if install used a tarball).
+SYNC_MAC_FORGE=true
 # Off until the preinstalled module is ready.
 REMOVE_PREINSTALLED_APPS=false
 

@@ -9,6 +9,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | Module | What it does |
 | --- | --- |
 | `prereqs` | Xcode Command Line Tools, Rosetta 2 on Apple Silicon |
+| `sync` | Make this tree a git checkout if needed, then fast-forward to origin |
 | `homebrew` | Installs Homebrew if missing, then `brew update` |
 | `packages` | Installs everything in `config/Brewfile`, then exclusive cask sets (Docker Desktop or OrbStack) |
 | `python` | Installs CPython with pyenv (global + extra 3.x versions), upgrades pip |
@@ -35,7 +36,7 @@ On a new Mac:
 bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh)
 ```
 
-That downloads the repo to `~/mac-forge` and runs `bootstrap.sh`. Pass-through examples:
+That downloads a tarball to `~/mac-forge` if needed and runs `bootstrap.sh`. Install never uses git; the `sync` module turns the tree into a checkout and fast-forwards it. Pass-through examples:
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh) --dry-run
@@ -81,7 +82,7 @@ Set `INSTALL_CASKS=false` in config to install CLI formulae only.
 ## Layout
 
 ```
-install.sh            Download this repo and run bootstrap.sh
+install.sh            Download a tarball if needed and run bootstrap.sh
 bootstrap.sh          Entry point
 lib/common.sh         Logging, dry-run, config loader, symlink helper
 modules/              One numbered script per concern (sourced in order)

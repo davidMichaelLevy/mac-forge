@@ -75,12 +75,16 @@ macos_bootstrap_load_config() {
   local example="$MACOS_BOOTSTRAP_ROOT/config/config.example.sh"
   local local_cfg="$MACOS_BOOTSTRAP_ROOT/config/config.sh"
 
+  if [ ! -f "$local_cfg" ] && [ -f "$example" ]; then
+    cp "$example" "$local_cfg"
+    log_info "Wrote $local_cfg from the example (edit name, email, and options)."
+  fi
+
   if [ -f "$local_cfg" ]; then
     # shellcheck source=/dev/null
     source "$local_cfg"
   elif [ -f "$example" ]; then
     log_warn "No config/config.sh — using config.example.sh"
-    log_dim "Copy it to config/config.sh and edit your name, email, and options."
     # shellcheck source=/dev/null
     source "$example"
   fi
@@ -103,7 +107,10 @@ macos_bootstrap_load_config() {
   SETUP_SSH="${SETUP_SSH:-true}"
   SETUP_PYTHON="${SETUP_PYTHON:-true}"
   LINK_DOTFILES="${LINK_DOTFILES:-true}"
+  SYNC_MAC_FORGE="${SYNC_MAC_FORGE:-true}"
   REMOVE_PREINSTALLED_APPS="${REMOVE_PREINSTALLED_APPS:-false}"
+  MAC_FORGE_REF="${MAC_FORGE_REF:-main}"
+  MAC_FORGE_REPO="${MAC_FORGE_REPO:-davidMichaelLevy/mac-forge}"
 
   MACOS_DOCK_AUTOHIDE="${MACOS_DOCK_AUTOHIDE:-true}"
   MACOS_KEY_REPEAT_FAST="${MACOS_KEY_REPEAT_FAST:-true}"
