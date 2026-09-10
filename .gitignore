@@ -1,6 +1,9 @@
 # Personal machine config (name, email, toggles)
 config/config.sh
 
+__pycache__/
+*.pyc
+
 .DS_Store
 *.swp
 *.swo

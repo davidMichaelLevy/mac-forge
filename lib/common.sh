@@ -114,6 +114,10 @@ macos_bootstrap_load_config() {
 
   MACOS_DISPLAY_SLEEP_BATTERY="${MACOS_DISPLAY_SLEEP_BATTERY:-10}"
   MACOS_DISPLAY_SLEEP_AC="${MACOS_DISPLAY_SLEEP_AC:-0}"
+  # Empty means skip; unset defaults to Antarctica's Southern Lights.
+  _macos_screensaver_default="Antarctica's Southern Lights"
+  MACOS_SCREENSAVER="${MACOS_SCREENSAVER-$_macos_screensaver_default}"
+  unset _macos_screensaver_default
   MACOS_DOCK_AUTOHIDE="${MACOS_DOCK_AUTOHIDE:-true}"
   MACOS_KEY_REPEAT_FAST="${MACOS_KEY_REPEAT_FAST:-true}"
   MACOS_SHOW_HIDDEN_FILES="${MACOS_SHOW_HIDDEN_FILES:-true}"

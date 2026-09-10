@@ -274,6 +274,32 @@ apply_power() {
   fi
 }
 
+apply_screensaver() {
+  local want result label
+  want="${MACOS_SCREENSAVER:-}"
+  if [ -z "$want" ]; then
+    return 0
+  fi
+
+  log_info "Screensaver: $want"
+  if is_dry_run; then
+    log_dim "[dry-run] set aerial screensaver to $want"
+    return 0
+  fi
+  if ! command_exists python3; then
+    log_warn "python3 not found; skip screensaver"
+    return 0
+  fi
+
+  if result="$(run_user python3 "$MACOS_BOOTSTRAP_ROOT/lib/set-aerial-screensaver.py" "$want")"; then
+    label="${result%%|*}"
+    log_success "Screensaver set to ${label:-$want}"
+    run_user killall WallpaperAgent >/dev/null 2>&1 || true
+  else
+    log_warn "Could not set screensaver to $want"
+  fi
+}
+
 apply_security() {
   log_info "Security"
   defaults_write com.apple.screensaver askForPassword -int 1
@@ -313,6 +339,7 @@ macos_bootstrap_sudo_start
 
 set_machine_names
 apply_power
+apply_screensaver
 apply_general
 apply_keyboard
 apply_trackpad
