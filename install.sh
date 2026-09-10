@@ -85,17 +85,26 @@ download_tarball() {
   trap - EXIT
 }
 
+# Ignore GIT_DIR from the calling shell so we only touch $DEST.
+git_in_dest() {
+  env -u GIT_DIR -u GIT_WORK_TREE -u GIT_INDEX_FILE -u GIT_OBJECT_DIRECTORY \
+    git -C "$DEST" "$@"
+}
+
 update_git() {
   info "Updating git checkout in $DEST"
-  git -C "$DEST" fetch --depth 1 origin "$REF"
-  git -C "$DEST" checkout "$REF"
-  git -C "$DEST" pull --ff-only origin "$REF"
+  # Never fetch --depth 1 into an existing clone: the new tip has no merge-base
+  # with the old shallow commit, so Git reports a false divergence.
+  git_in_dest fetch origin "$REF"
+  git_in_dest checkout "$REF"
+  git_in_dest merge --ff-only "origin/$REF"
 }
 
 clone_git() {
   local git_url="https://github.com/${REPO_SLUG}.git"
   info "Cloning ${git_url} (${REF})"
-  git clone --depth 1 --branch "$REF" "$git_url" "$DEST"
+  env -u GIT_DIR -u GIT_WORK_TREE -u GIT_INDEX_FILE -u GIT_OBJECT_DIRECTORY \
+    git clone --depth 1 --branch "$REF" "$git_url" "$DEST"
 }
 
 dir_is_empty() {
