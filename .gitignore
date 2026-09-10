@@ -1,5 +1,7 @@
 # Personal machine config (name, email, toggles)
 config/config.sh
+# Merged snapshot written by macos_bootstrap_load_config
+config/effective.config
 
 __pycache__/
 *.pyc

@@ -1,6 +1,8 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2034
-# Copy this file to config.sh and edit. config.sh is gitignored.
+# Starter overlay. Copied to config.sh if that file is missing. config.sh is
+# gitignored. Only keys you set here override config.defaults.sh.
+# The merge is written to effective.config and sourced as the runtime config.
 
 # --- identity -------------------------------------------------------------
 
@@ -26,15 +28,8 @@ SSH_KEY_COMMENT=""
 
 # --- modules (true/false) -------------------------------------------------
 
-INSTALL_ROSETTA=true
-INSTALL_PACKAGES=true
 INSTALL_CASKS=true
-APPLY_MACOS_DEFAULTS=true
-SETUP_SHELL=true
-SETUP_GIT=true
-SETUP_SSH=true
 SETUP_PYTHON=true
-LINK_DOTFILES=true
 # Fast-forward this checkout to origin before forge.sh runs
 # (creates a git repo if install used a tarball).
 SYNC_MAC_FORGE=true
@@ -43,122 +38,25 @@ REMOVE_PREINSTALLED_APPS=false
 
 # --- exclusive casks (used when INSTALL_CASKS=true) -----------------------
 
-# Exclusive groups of Homebrew cask tokens (pipe-separated). Exactly one
-# member is kept; the others are uninstalled if present. Put the token to
-# keep in EXCLUSIVE_CASK_CHOICES. If a set has no matching choice, the first
-# member is used.
-#
 # docker-desktop vs orbstack: OrbStack is a lighter Docker Desktop replacement
 # (same `docker` CLI). Free for personal use; company use needs a paid license.
-EXCLUSIVE_CASK_SETS=(
-  "docker-desktop|orbstack"
-)
 EXCLUSIVE_CASK_CHOICES=(
   docker-desktop
 )
 
 # --- macos defaults (used when APPLY_MACOS_DEFAULTS=true) -----------------
 
-# Display sleep in minutes. 0 = never. On AC, 0 also keeps the Mac awake.
-MACOS_DISPLAY_SLEEP_BATTERY=10
-MACOS_DISPLAY_SLEEP_AC=0
-# Aerial as shown in System Settings. Empty = leave the current screensaver.
-MACOS_SCREENSAVER="Antarctica's Southern Lights"
-
 # true = 24-hour, false = 12-hour, empty = leave the current clock.
 MACOS_24_HOUR_CLOCK=true
-MACOS_DOCK_AUTOHIDE=true
-MACOS_KEY_REPEAT_FAST=true
-MACOS_SHOW_HIDDEN_FILES=true
-MACOS_TAP_TO_CLICK=true
 # Apple "Natural" scrolling (content follows your fingers). false = reversed.
 MACOS_NATURAL_SCROLL=false
 # HTTP/HTTPS handler (defaultbrowser name: firefox, chrome, safari).
 # Leave empty to leave the current default alone.
 MACOS_DEFAULT_BROWSER="firefox"
 
-# Apple apps that ship on a new Mac. Names match the .app bundle (no .app suffix).
-# Optional: Data volume, /Applications, Finder will Move to Trash, App Store reinstall.
-MACOS_OPTIONAL_APPS=(
-  GarageBand
-  iMovie
-  Keynote
-  Numbers
-  Pages
-)
-# Keep: if a name is also in a remove list, do not uninstall it and do not
-# unpin it from the Dock. Names that are only here (not on a remove list) are
-# ignored; that is not an error.
+# Keep these Apple apps if they are also on a remove list (optional or
+# non-optional). Names match the .app bundle (no .app suffix).
 MACOS_KEEP_APPS=(
-)
-# Non-optional: sealed system volume. Finder refuses delete; SIP / SSV protect them.
-MACOS_NONOPTIONAL_APPS=(
-  "Activity Monitor"
-  "AirPort Utility"
-  "Apple Games"
-  "App Store"
-  Apps
-  "Audio MIDI Setup"
-  Automator
-  "Bluetooth File Exchange"
-  Books
-  "Boot Camp Assistant"
-  Calculator
-  Calendar
-  Chess
-  Clock
-  "ColorSync Utility"
-  Console
-  Contacts
-  Dictionary
-  "Digital Color Meter"
-  "Directory Utility"
-  "Disk Utility"
-  "DVD Player"
-  FaceTime
-  "Find My"
-  Finder
-  "Font Book"
-  Freeform
-  Grapher
-  Home
-  "Image Capture"
-  "Image Playground"
-  "iPhone Mirroring"
-  Journal
-  Magnifier
-  Mail
-  Maps
-  Messages
-  "Migration Assistant"
-  Music
-  News
-  Notes
-  Passwords
-  Phone
-  "Photo Booth"
-  Photos
-  Podcasts
-  Preview
-  "Print Center"
-  "QuickTime Player"
-  Reminders
-  Safari
-  "Screen Sharing"
-  Screenshot
-  "Script Editor"
-  Shortcuts
-  Stickies
-  Stocks
-  "System Information"
-  "System Settings"
-  Terminal
-  TextEdit
-  Tips
-  TV
-  "Voice Memos"
-  "VoiceOver Utility"
-  Weather
 )
 
 # --- python (used when SETUP_PYTHON=true) ---------------------------------

@@ -48,7 +48,7 @@ Or clone it yourself:
 git clone https://github.com/davidMichaelLevy/mac-forge.git ~/mac-forge
 cd ~/mac-forge
 cp config/config.example.sh config/config.sh
-# edit config/config.sh  — name, email, HostName overrides, module toggles
+# edit config/config.sh  — overrides only; defaults come from config.defaults.sh
 # edit config/Brewfile   — formulae and casks
 ./bootstrap.sh --dry-run          # see the plan
 ./bootstrap.sh                    # apply it
@@ -63,7 +63,7 @@ Open a **new terminal** when it finishes so PATH, zsh, and Starship pick up the 
 
 Nothing in the scripts is meant to be edited for day-to-day taste. Change these instead:
 
-1. **`config/config.sh`** — identity, ComputerName (generated when empty, or `SET_MACHINE_NAMES=false` to leave names alone), HostName / LocalHostName overrides, which modules run, exclusive cask choices (Docker Desktop vs OrbStack), display sleep (battery vs AC), Aerial screensaver, 24-hour clock, Dock autohide, fast key repeat, hidden files, tap-to-click, scroll direction, default browser, optional/required/keep Apple app lists, Python version.
+1. **`config/config.sh`** — overlay on `config.defaults.sh` (identity, ComputerName, module toggles, Docker vs OrbStack, clock, scroll, browser, keep-apps, Python). Missing keys keep the default. Start from `config.example.sh` (copied if `config.sh` is missing). The merge is written to `config/effective.config` and then sourced as the runtime config.
 2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids. Exclusive pairs (Docker vs OrbStack) are not listed here; they come from config.
 3. **`dotfiles/`** — zsh, Starship, and the global gitignore. They are symlinked; edit them in this repo.
 4. **`~/.zshrc.local`** — machine-only aliases and secrets. The linked `~/.zshrc` sources it if present.
@@ -89,7 +89,9 @@ lib/common.sh         Logging, dry-run, config loader, symlink helper
 lib/sync.sh           Git-init if needed, then fast-forward to origin
 modules/              One numbered script per concern (sourced in order)
 config/Brewfile       Homebrew bundle list
-config/config.example.sh
+config/config.defaults.sh Project defaults (always loaded first)
+config/config.example.sh  Starter overlay (copied to config.sh)
+config/effective.config   Merged snapshot (generated, gitignored)
 dotfiles/             Files linked into $HOME
 scripts/check.sh      bash -n + shellcheck
 ```

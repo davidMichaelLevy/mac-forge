@@ -47,6 +47,7 @@ Modules (all of them, in order, if you omit the list):
 
 Edit config/config.sh and config/Brewfile before the first real run.
 bootstrap.sh copies config.example.sh to config.sh if it is missing.
+Defaults come from config.defaults.sh; config.sh overrides them.
 
 Examples:
   ./bootstrap.sh

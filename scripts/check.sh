@@ -28,12 +28,14 @@ for f in "${scripts[@]}"; do
   fi
 done
 
-if ! bash -n "$ROOT/config/config.example.sh"; then
-  echo "syntax error: config/config.example.sh" >&2
-  fail=1
-else
-  echo "    ok  config/config.example.sh"
-fi
+for cfg in config.defaults.sh config.example.sh; do
+  if ! bash -n "$ROOT/config/$cfg"; then
+    echo "syntax error: config/$cfg" >&2
+    fail=1
+  else
+    echo "    ok  config/$cfg"
+  fi
+done
 
 if command -v shellcheck >/dev/null 2>&1; then
   echo "==> shellcheck"
@@ -45,6 +47,7 @@ if command -v shellcheck >/dev/null 2>&1; then
     "$ROOT/lib/sync.sh" \
     "$ROOT/scripts/check.sh" \
     "$ROOT/modules/"*.sh \
+    "$ROOT/config/config.defaults.sh" \
     "$ROOT/config/config.example.sh"); then
     fail=1
   fi
