@@ -29,6 +29,7 @@ SETUP_GIT=true
 SETUP_SSH=true
 SETUP_PYTHON=true
 SETUP_CHROME=true
+SETUP_FIREFOX=true
 LINK_DOTFILES=true
 SYNC_MAC_FORGE=true
 REMOVE_PREINSTALLED_APPS=false
@@ -145,6 +146,11 @@ PYENV_PYTHON_EXTRA_VERSIONS="3.9 3.10 3.11 3.12 3.13 3.14"
 
 # Google account for Chrome sign-in and sync. Empty = USER_EMAIL.
 CHROME_GOOGLE_ACCOUNT=""
+
+# --- firefox (used when SETUP_FIREFOX=true) -------------------------------
+
+# Firefox Account for Sync. Empty = USER_EMAIL.
+FIREFOX_SYNC_ACCOUNT=""
 
 # --- git (used when SETUP_GIT=true) ---------------------------------------
 

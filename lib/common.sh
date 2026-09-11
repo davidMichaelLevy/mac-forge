@@ -100,7 +100,7 @@ macos_bootstrap_load_config() {
     source "$local_cfg"
   fi
 
-  # Derived — not layer keys. Empty git/chrome identity follows USER_*.
+  # Derived — not layer keys. Empty git/browser identity follows USER_*.
   if [ -z "${GIT_USER_NAME:-}" ]; then
     GIT_USER_NAME="${USER_NAME:-}"
   fi
@@ -109,6 +109,9 @@ macos_bootstrap_load_config() {
   fi
   if [ -z "${CHROME_GOOGLE_ACCOUNT:-}" ]; then
     CHROME_GOOGLE_ACCOUNT="${USER_EMAIL:-}"
+  fi
+  if [ -z "${FIREFOX_SYNC_ACCOUNT:-}" ]; then
+    FIREFOX_SYNC_ACCOUNT="${USER_EMAIL:-}"
   fi
   if [ -z "${SSH_KEY_COMMENT:-}" ]; then
     SSH_KEY_COMMENT="${GIT_USER_EMAIL:-}"

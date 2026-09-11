@@ -38,6 +38,7 @@ Modules (all of them, in order, if you omit the list):
   homebrew    Install Homebrew and put it on PATH
   packages    Brewfile formulae, casks, and exclusive sets (Docker or OrbStack)
   chrome      Google Chrome sign-in and sync for your Google account
+  firefox     Firefox Account sign-in and Sync
   python      Install CPython with pyenv (global plus extra versions)
   macos       Finder, Dock, keyboard, screenshots, and other defaults
   preinstalled Uninstall optional Apple apps; unpin the rest from the Dock

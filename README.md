@@ -12,6 +12,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `homebrew` | Installs Homebrew if missing, then `brew update` |
 | `packages` | Installs everything in `config/Brewfile`, then exclusive cask sets (Docker Desktop or OrbStack) |
 | `chrome` | Enable Chrome Google sign-in and sync, limited to `CHROME_GOOGLE_ACCOUNT` (empty = `USER_EMAIL`) |
+| `firefox` | Enable Firefox Sync for `FIREFOX_SYNC_ACCOUNT` (empty = `USER_EMAIL`) |
 | `python` | Installs CPython with pyenv (global + extra 3.x versions), upgrades pip |
 | `macos` | Finder, Dock, keyboard, trackpad, screenshots, 24-hour clock, display sleep (10 min on battery, never on AC), Antarctica's Southern Lights screensaver, firewall, Safari develop menu, Firefox as default browser; ComputerName / HostName / LocalHostName |
 | `preinstalled` | Uninstall optional Apple apps; unpin required Apple apps from the Dock; `MACOS_KEEP_APPS` is left alone |
@@ -64,7 +65,7 @@ Open a **new terminal** when it finishes so PATH, zsh, and Starship pick up the 
 
 Nothing in the scripts is meant to be edited for day-to-day taste. Change these instead:
 
-1. **`config/config.sh`** — overlay on `config.defaults.sh` (identity including `USER_NAME` / `USER_EMAIL`, ComputerName, module toggles, Docker vs OrbStack, clock, scroll, browser, keep-apps, Python, Chrome, Git). Missing keys keep the default. Start from `config.example.sh` (copied if `config.sh` is missing). The merge is written to `config/effective.config` and then sourced as the runtime config.
+1. **`config/config.sh`** — overlay on `config.defaults.sh` (identity including `USER_NAME` / `USER_EMAIL`, ComputerName, module toggles, Docker vs OrbStack, clock, scroll, browser, keep-apps, Python, Chrome, Firefox, Git). Missing keys keep the default. Start from `config.example.sh` (copied if `config.sh` is missing). The merge is written to `config/effective.config` and then sourced as the runtime config.
 2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids. Exclusive pairs (Docker vs OrbStack) are not listed here; they come from config.
 3. **`dotfiles/`** — zsh, Starship, and the global gitignore. They are symlinked; edit them in this repo.
 4. **`~/.zshrc.local`** — machine-only aliases and secrets. The linked `~/.zshrc` sources it if present.
