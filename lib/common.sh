@@ -92,7 +92,7 @@ macos_bootstrap_load_config() {
 
   if [ ! -f "$local_cfg" ] && [ -f "$example" ]; then
     cp "$example" "$local_cfg"
-    log_info "Wrote $local_cfg from the example (edit name, email, and options)."
+    log_info "Wrote $local_cfg from the example (edit USER_NAME, USER_EMAIL, and options)."
   fi
 
   if [ -f "$local_cfg" ]; then
@@ -100,7 +100,16 @@ macos_bootstrap_load_config() {
     source "$local_cfg"
   fi
 
-  # Derived — not a layer key. Empty comment follows the git email.
+  # Derived — not layer keys. Empty git/chrome identity follows USER_*.
+  if [ -z "${GIT_USER_NAME:-}" ]; then
+    GIT_USER_NAME="${USER_NAME:-}"
+  fi
+  if [ -z "${GIT_USER_EMAIL:-}" ]; then
+    GIT_USER_EMAIL="${USER_EMAIL:-}"
+  fi
+  if [ -z "${CHROME_GOOGLE_ACCOUNT:-}" ]; then
+    CHROME_GOOGLE_ACCOUNT="${USER_EMAIL:-}"
+  fi
   if [ -z "${SSH_KEY_COMMENT:-}" ]; then
     SSH_KEY_COMMENT="${GIT_USER_EMAIL:-}"
   fi

@@ -11,11 +11,12 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `prereqs` | Xcode Command Line Tools, Rosetta 2 on Apple Silicon |
 | `homebrew` | Installs Homebrew if missing, then `brew update` |
 | `packages` | Installs everything in `config/Brewfile`, then exclusive cask sets (Docker Desktop or OrbStack) |
+| `chrome` | Enable Chrome Google sign-in and sync, limited to `CHROME_GOOGLE_ACCOUNT` (empty = `USER_EMAIL`) |
 | `python` | Installs CPython with pyenv (global + extra 3.x versions), upgrades pip |
 | `macos` | Finder, Dock, keyboard, trackpad, screenshots, 24-hour clock, display sleep (10 min on battery, never on AC), Antarctica's Southern Lights screensaver, firewall, Safari develop menu, Firefox as default browser; ComputerName / HostName / LocalHostName |
 | `preinstalled` | Uninstall optional Apple apps; unpin required Apple apps from the Dock; `MACOS_KEEP_APPS` is left alone |
 | `shell` | Confirms **zsh** is the login shell; registers Homebrew bash in `/etc/shells` |
-| `git` | Name, email, `main` as default branch, rebase-on-pull, Meld as diff/merge tool |
+| `git` | `user.name` / `user.email` from `GIT_USER_NAME` / `GIT_USER_EMAIL` (empty = `USER_NAME` / `USER_EMAIL`), `main` as default branch, rebase-on-pull, Meld as diff/merge tool |
 | `ssh` | `ed25519` key, macOS Keychain agent, prints the public key for GitHub |
 | `dotfiles` | Symlinks zsh, gitignore, EditorConfig, and Starship into `$HOME` |
 
@@ -63,7 +64,7 @@ Open a **new terminal** when it finishes so PATH, zsh, and Starship pick up the 
 
 Nothing in the scripts is meant to be edited for day-to-day taste. Change these instead:
 
-1. **`config/config.sh`** — overlay on `config.defaults.sh` (identity, ComputerName, module toggles, Docker vs OrbStack, clock, scroll, browser, keep-apps, Python). Missing keys keep the default. Start from `config.example.sh` (copied if `config.sh` is missing). The merge is written to `config/effective.config` and then sourced as the runtime config.
+1. **`config/config.sh`** — overlay on `config.defaults.sh` (identity including `USER_NAME` / `USER_EMAIL`, ComputerName, module toggles, Docker vs OrbStack, clock, scroll, browser, keep-apps, Python, Chrome, Git). Missing keys keep the default. Start from `config.example.sh` (copied if `config.sh` is missing). The merge is written to `config/effective.config` and then sourced as the runtime config.
 2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids. Exclusive pairs (Docker vs OrbStack) are not listed here; they come from config.
 3. **`dotfiles/`** — zsh, Starship, and the global gitignore. They are symlinked; edit them in this repo.
 4. **`~/.zshrc.local`** — machine-only aliases and secrets. The linked `~/.zshrc` sources it if present.
@@ -101,7 +102,7 @@ scripts/check.sh      bash -n + shellcheck
 - **`--dry-run`** prints commands and writes nothing.
 - Existing `~/.zshrc` (and other dotfiles) that are not already our symlinks are moved aside as `*.bak.<timestamp>`.
 - `~/.ssh/config` is appended with a marked block, not overwritten. An existing key is left alone.
-- Git identity is only written when `GIT_USER_NAME` / `GIT_USER_EMAIL` are set.
+- Git `user.name` / `user.email` are only written when `GIT_USER_NAME` / `GIT_USER_EMAIL` are set (they default to `USER_NAME` / `USER_EMAIL`).
 - macOS defaults are not automatically reverted. Keep notes if you need to undo a setting.
 
 ## Check the scripts (any OS)

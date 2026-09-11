@@ -6,8 +6,8 @@
 
 # --- identity -------------------------------------------------------------
 
-GIT_USER_NAME="David Levy"
-GIT_USER_EMAIL="david.michael.levy@gmail.com"
+USER_NAME="David Levy"
+USER_EMAIL="david.michael.levy@gmail.com"
 
 # Sharing display name (ComputerName). Empty = generated, e.g.
 # dlevy-MacBook-Pro-16in-2024-X9K2 (login + model + screen + year + serial last 4).
@@ -23,13 +23,15 @@ SET_MACHINE_NAMES=true
 # --- ssh ------------------------------------------------------------------
 
 SSH_KEY_TYPE="ed25519"
-# Defaults to GIT_USER_EMAIL when empty.
+# Empty = GIT_USER_EMAIL (which itself defaults to USER_EMAIL).
 SSH_KEY_COMMENT=""
 
 # --- modules (true/false) -------------------------------------------------
 
 INSTALL_CASKS=true
 SETUP_PYTHON=true
+SETUP_CHROME=true
+SETUP_GIT=true
 # Fast-forward this checkout to origin before forge.sh runs
 # (creates a git repo if install used a tarball).
 SYNC_MAC_FORGE=true
@@ -70,3 +72,15 @@ PYENV_PYTHON_VERSION="latest"
 # Space-separated prefixes or exact versions. Not set as global.
 # Leave empty to install only the global version.
 PYENV_PYTHON_EXTRA_VERSIONS="3.9 3.10 3.11 3.12 3.13 3.14"
+
+# --- chrome (used when SETUP_CHROME=true) ---------------------------------
+
+# Google account for Chrome sign-in and sync. Empty = USER_EMAIL.
+CHROME_GOOGLE_ACCOUNT=""
+
+# --- git (used when SETUP_GIT=true) ---------------------------------------
+
+# Empty = USER_NAME
+GIT_USER_NAME=""
+# Empty = USER_EMAIL
+GIT_USER_EMAIL=""

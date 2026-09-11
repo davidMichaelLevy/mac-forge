@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# git — identity, defaults, aliases. Skips identity fields that are empty.
+# git — user.name, user.email, defaults, aliases. Skips empty name/email.
 
 if [ -z "${MACOS_BOOTSTRAP_ROOT:-}" ]; then
   MACOS_BOOTSTRAP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -25,14 +25,14 @@ if [ -n "${GIT_USER_NAME:-}" ]; then
   git_global user.name "$GIT_USER_NAME"
   log_success "user.name = $GIT_USER_NAME"
 else
-  log_warn "GIT_USER_NAME is empty — not changing user.name"
+  log_warn "GIT_USER_NAME and USER_NAME are empty — not changing user.name"
 fi
 
 if [ -n "${GIT_USER_EMAIL:-}" ]; then
   git_global user.email "$GIT_USER_EMAIL"
   log_success "user.email = $GIT_USER_EMAIL"
 else
-  log_warn "GIT_USER_EMAIL is empty — not changing user.email"
+  log_warn "GIT_USER_EMAIL and USER_EMAIL are empty — not changing user.email"
 fi
 
 log_info "Applying git defaults"

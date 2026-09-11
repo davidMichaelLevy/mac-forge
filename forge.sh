@@ -37,11 +37,12 @@ Modules (all of them, in order, if you omit the list):
   prereqs     Xcode Command Line Tools, Rosetta
   homebrew    Install Homebrew and put it on PATH
   packages    Brewfile formulae, casks, and exclusive sets (Docker or OrbStack)
+  chrome      Google Chrome sign-in and sync for your Google account
   python      Install CPython with pyenv (global plus extra versions)
   macos       Finder, Dock, keyboard, screenshots, and other defaults
   preinstalled Uninstall optional Apple apps; unpin the rest from the Dock
   shell       Make sure zsh is the login shell
-  git         Global identity, sane defaults, Meld as diff/merge tool
+  git         user.name, user.email, sane defaults, Meld as diff/merge tool
   ssh         ed25519 key plus macOS keychain agent
   dotfiles    Symlink shell/editor config into $HOME
 
@@ -285,8 +286,8 @@ if is_truthy "${SET_MACHINE_NAMES:-true}"; then
 else
   log_info "Machine names: leave current"
 fi
-if [ -n "${GIT_USER_NAME:-}" ]; then
-  log_info "Git: $GIT_USER_NAME <$GIT_USER_EMAIL>"
+if [ -n "${USER_NAME:-}" ] || [ -n "${USER_EMAIL:-}" ]; then
+  log_info "Identity: ${USER_NAME:-} <${USER_EMAIL:-}>"
 fi
 
 log_step "Plan"
