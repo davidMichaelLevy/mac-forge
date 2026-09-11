@@ -8,6 +8,10 @@ if [ -z "${MACOS_BOOTSTRAP_ROOT:-}" ]; then
   macos_bootstrap_load_config
 fi
 
+if ! module_is_enabled "${BASH_SOURCE[0]}"; then
+  return 0 2>/dev/null || exit 0
+fi
+
 eval_brew_shellenv
 
 # Homebrew's installer calls execute_sudo(), which runs commands directly when

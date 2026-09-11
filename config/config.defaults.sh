@@ -19,23 +19,33 @@ SSH_KEY_TYPE="ed25519"
 SSH_KEY_COMMENT=""
 
 # --- modules (true/false) -------------------------------------------------
+# Kill switch is MODULE_<name>_ENABLED from the filename (22-chrome.sh →
+# MODULE_CHROME_ENABLED). Empty or unset = on; false = skip.
 
-INSTALL_ROSETTA=true
-INSTALL_PACKAGES=true
-INSTALL_CASKS=true
-APPLY_MACOS_DEFAULTS=true
-SETUP_SHELL=true
-SETUP_GIT=true
-SETUP_SSH=true
-SETUP_PYTHON=true
-SETUP_CHROME=true
-SETUP_FIREFOX=true
-LINK_DOTFILES=true
+MODULE_PREREQS_ENABLED=""
+MODULE_HOMEBREW_ENABLED=""
+MODULE_PACKAGES_ENABLED=""
+MODULE_CHROME_ENABLED=""
+MODULE_FIREFOX_ENABLED=""
+MODULE_PYTHON_ENABLED=""
+MODULE_MACOS_ENABLED=""
+MODULE_PREINSTALLED_ENABLED=false
+MODULE_SHELL_ENABLED=""
+MODULE_GIT_ENABLED=""
+MODULE_SSH_ENABLED=""
+MODULE_DOTFILES_ENABLED=""
+
 SYNC_MAC_FORGE=true
-REMOVE_PREINSTALLED_APPS=false
-
 MAC_FORGE_REF="main"
 MAC_FORGE_REPO="davidMichaelLevy/mac-forge"
+
+# --- prereqs (used when MODULE_PREREQS_ENABLED=true) ----------------------
+
+INSTALL_ROSETTA=true
+
+# --- packages (used when MODULE_PACKAGES_ENABLED=true) --------------------
+
+INSTALL_CASKS=true
 
 # --- exclusive casks (used when INSTALL_CASKS=true) -----------------------
 
@@ -46,7 +56,7 @@ EXCLUSIVE_CASK_CHOICES=(
   docker-desktop
 )
 
-# --- macos defaults (used when APPLY_MACOS_DEFAULTS=true) -----------------
+# --- macos defaults (used when MODULE_MACOS_ENABLED=true) -----------------
 
 MACOS_DISPLAY_SLEEP_BATTERY=10
 MACOS_DISPLAY_SLEEP_AC=0
@@ -137,22 +147,22 @@ MACOS_NONOPTIONAL_APPS=(
   Weather
 )
 
-# --- python (used when SETUP_PYTHON=true) ---------------------------------
+# --- python (used when MODULE_PYTHON_ENABLED=true) ------------------------
 
 PYENV_PYTHON_VERSION="latest"
 PYENV_PYTHON_EXTRA_VERSIONS="3.9 3.10 3.11 3.12 3.13 3.14"
 
-# --- chrome (used when SETUP_CHROME=true) ---------------------------------
+# --- chrome (used when MODULE_CHROME_ENABLED=true) ------------------------
 
 # Google account for Chrome sign-in and sync. Empty = USER_EMAIL.
 CHROME_GOOGLE_ACCOUNT=""
 
-# --- firefox (used when SETUP_FIREFOX=true) -------------------------------
+# --- firefox (used when MODULE_FIREFOX_ENABLED=true) ----------------------
 
 # Firefox Account for Sync. Empty = USER_EMAIL.
 FIREFOX_SYNC_ACCOUNT=""
 
-# --- git (used when SETUP_GIT=true) ---------------------------------------
+# --- git (used when MODULE_GIT_ENABLED=true) ------------------------------
 
 # Empty = USER_NAME
 GIT_USER_NAME=""

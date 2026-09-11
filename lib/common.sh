@@ -599,6 +599,28 @@ module_name_from_path() {
   printf '%s' "$base" | sed 's/^[0-9][0-9]*-//'
 }
 
+# MODULE_CHROME_ENABLED from modules/22-chrome.sh. Hyphens become underscores.
+module_enabled_key() {
+  local name
+  name="$(module_name_from_path "$1")"
+  printf 'MODULE_%s_ENABLED' "$(printf '%s' "$name" | tr '-' '_' | tr '[:lower:]' '[:upper:]')"
+}
+
+# Call from a module as: module_is_enabled "${BASH_SOURCE[0]}"
+# (BASH_SOURCE[0] at module top level is this file; inside this helper it is not.)
+# Unset keys default true; turn a module off in config (e.g. preinstalled).
+module_is_enabled() {
+  local path="$1"
+  local name key
+  name="$(module_name_from_path "$path")"
+  key="$(module_enabled_key "$path")"
+  if is_truthy "${!key:-true}"; then
+    return 0
+  fi
+  log_warn "Skipping $name ($key is false)."
+  return 1
+}
+
 list_module_files() {
   local f
   for f in "$MACOS_BOOTSTRAP_ROOT/modules/"*.sh; do

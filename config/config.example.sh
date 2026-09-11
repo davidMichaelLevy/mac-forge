@@ -27,17 +27,18 @@ SSH_KEY_TYPE="ed25519"
 SSH_KEY_COMMENT=""
 
 # --- modules (true/false) -------------------------------------------------
+# MODULE_<name>_ENABLED from the filename (22-chrome.sh → MODULE_CHROME_ENABLED).
+# Empty or unset = on; false = skip. Defaults live in config.defaults.sh.
 
-INSTALL_CASKS=true
-SETUP_PYTHON=true
-SETUP_CHROME=true
-SETUP_FIREFOX=true
-SETUP_GIT=true
+# Off in config.defaults.sh (uninstalls optional Apple apps).
+# MODULE_PREINSTALLED_ENABLED=true
 # Fast-forward this checkout to origin before forge.sh runs
 # (creates a git repo if install used a tarball).
 SYNC_MAC_FORGE=true
-# Off until the preinstalled module is ready.
-REMOVE_PREINSTALLED_APPS=false
+
+# --- packages (used when MODULE_PACKAGES_ENABLED=true) --------------------
+
+INSTALL_CASKS=true
 
 # --- exclusive casks (used when INSTALL_CASKS=true) -----------------------
 
@@ -47,7 +48,7 @@ EXCLUSIVE_CASK_CHOICES=(
   docker-desktop
 )
 
-# --- macos defaults (used when APPLY_MACOS_DEFAULTS=true) -----------------
+# --- macos defaults (used when MODULE_MACOS_ENABLED=true) -----------------
 
 # true = 24-hour, false = 12-hour, empty = leave the current clock.
 MACOS_24_HOUR_CLOCK=true
@@ -62,7 +63,7 @@ MACOS_DEFAULT_BROWSER="firefox"
 MACOS_KEEP_APPS=(
 )
 
-# --- python (used when SETUP_PYTHON=true) ---------------------------------
+# --- python (used when MODULE_PYTHON_ENABLED=true) ------------------------
 
 # CPython to install with pyenv and set as `pyenv global`.
 # Use "latest" (newest 3.x), a prefix like "3.13", or an exact "3.13.2".
@@ -74,17 +75,17 @@ PYENV_PYTHON_VERSION="latest"
 # Leave empty to install only the global version.
 PYENV_PYTHON_EXTRA_VERSIONS="3.9 3.10 3.11 3.12 3.13 3.14"
 
-# --- chrome (used when SETUP_CHROME=true) ---------------------------------
+# --- chrome (used when MODULE_CHROME_ENABLED=true) ------------------------
 
 # Google account for Chrome sign-in and sync. Empty = USER_EMAIL.
 CHROME_GOOGLE_ACCOUNT=""
 
-# --- firefox (used when SETUP_FIREFOX=true) -------------------------------
+# --- firefox (used when MODULE_FIREFOX_ENABLED=true) ----------------------
 
 # Firefox Account for Sync. Empty = USER_EMAIL.
 FIREFOX_SYNC_ACCOUNT=""
 
-# --- git (used when SETUP_GIT=true) ---------------------------------------
+# --- git (used when MODULE_GIT_ENABLED=true) ------------------------------
 
 # Empty = USER_NAME
 GIT_USER_NAME=""

@@ -1,6 +1,6 @@
 # Brewfile — edit this list for the machine you want.
 # Re-run `./bootstrap.sh packages` after changing it.
-# Formulae always install when INSTALL_PACKAGES=true.
+# Formulae always install when MODULE_PACKAGES_ENABLED=true.
 # Casks (apps + fonts) install when INSTALL_CASKS=true.
 
 # Tappie is a Homebrew GUI. Homebrew 6 will not load this third-party cask
@@ -57,9 +57,6 @@ brew "mas"
 
 # --- apps -----------------------------------------------------------------
 cask "empiricapps/zenithal/tappie", trusted: true
-cask "ghostty"
-cask "kitty"
-cask "iterm2"
 cask "rectangle"
 cask "raycast"
 cask "cursor"
@@ -74,6 +71,11 @@ cask "iina"
 cask "tidal"
 cask "stats"
 cask "keka"
+
+# --- terminal emulators ---------------------------------------------------
+cask "ghostty"
+cask "kitty"
+cask "iterm2"
 
 # --- browsers -------------------------------------------------------------
 cask "firefox"

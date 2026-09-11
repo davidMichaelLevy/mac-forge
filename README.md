@@ -65,7 +65,7 @@ Open a **new terminal** when it finishes so PATH, zsh, and Starship pick up the 
 
 Nothing in the scripts is meant to be edited for day-to-day taste. Change these instead:
 
-1. **`config/config.sh`** — overlay on `config.defaults.sh` (identity including `USER_NAME` / `USER_EMAIL`, ComputerName, module toggles, Docker vs OrbStack, clock, scroll, browser, keep-apps, Python, Chrome, Firefox, Git). Missing keys keep the default. Start from `config.example.sh` (copied if `config.sh` is missing). The merge is written to `config/effective.config` and then sourced as the runtime config.
+1. **`config/config.sh`** — overlay on `config.defaults.sh` (identity including `USER_NAME` / `USER_EMAIL`, ComputerName, `MODULE_<name>_ENABLED` kill switches, Docker vs OrbStack, clock, scroll, browser, keep-apps, Python, Chrome, Firefox, Git). Missing keys keep the default. Start from `config.example.sh` (copied if `config.sh` is missing). The merge is written to `config/effective.config` and then sourced as the runtime config.
 2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids. Exclusive pairs (Docker vs OrbStack) are not listed here; they come from config.
 3. **`dotfiles/`** — zsh, Starship, and the global gitignore. They are symlinked; edit them in this repo.
 4. **`~/.zshrc.local`** — machine-only aliases and secrets. The linked `~/.zshrc` sources it if present.
@@ -79,7 +79,7 @@ To run a subset:
 ./forge.sh macos              # skip sync; apply modules only
 ```
 
-Set `INSTALL_CASKS=false` in config to install CLI formulae only.
+Set `MODULE_<name>_ENABLED=false` to skip a module (`22-chrome.sh` → `MODULE_CHROME_ENABLED`). The plan still lists it; the module logs a skip after you confirm. Set `INSTALL_CASKS=false` to install CLI formulae only.
 
 ## Layout
 

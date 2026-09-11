@@ -325,7 +325,7 @@ else
   log_success "Bootstrap finished."
   log_info "Open a new terminal so shell and PATH changes take effect."
   log_info "Some macOS defaults apply fully after logout or restart."
-  if is_truthy "${SETUP_SSH:-true}" && [ -f "$HOME/.ssh/id_ed25519.pub" ]; then
+  if is_truthy "${MODULE_SSH_ENABLED:-true}" && [ -f "$HOME/.ssh/id_ed25519.pub" ]; then
     log_info "Add your SSH public key to GitHub if you have not already:"
     log_dim "https://github.com/settings/keys"
   fi

@@ -9,8 +9,7 @@ if [ -z "${MACOS_BOOTSTRAP_ROOT:-}" ]; then
   macos_bootstrap_load_config
 fi
 
-if ! is_truthy "${SETUP_FIREFOX:-true}"; then
-  log_warn "Skipping firefox (SETUP_FIREFOX is false)."
+if ! module_is_enabled "${BASH_SOURCE[0]}"; then
   return 0 2>/dev/null || exit 0
 fi
 

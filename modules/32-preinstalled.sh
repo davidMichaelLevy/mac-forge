@@ -10,8 +10,7 @@ if [ -z "${MACOS_BOOTSTRAP_ROOT:-}" ]; then
   macos_bootstrap_load_config
 fi
 
-if ! is_truthy "${REMOVE_PREINSTALLED_APPS:-false}"; then
-  log_warn "Skipping preinstalled apps (REMOVE_PREINSTALLED_APPS is false)."
+if ! module_is_enabled "${BASH_SOURCE[0]}"; then
   return 0 2>/dev/null || exit 0
 fi
 
