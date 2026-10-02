@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Download mac-forge as a tarball and run bootstrap.sh.
+# Download mac-forge as a tarball and run bootstrap.sh so forge.sh can run.
 #
 #   bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh)
 #
-# Extra arguments are passed through to bootstrap.sh.
+# Extra arguments are passed through to bootstrap.sh (and then forge.sh).
 #
 set -euo pipefail
 
@@ -23,24 +23,24 @@ FORCE=false
 
 usage() {
   cat <<EOF
-mac-forge installer — download a tarball if needed and run bootstrap.sh
+mac-forge installer — download a tarball, then run bootstrap.sh so forge.sh can run
 
 Usage:
-  bash <(curl -fsSL https://raw.githubusercontent.com/${REPO_SLUG}/main/install.sh) [options] [bootstrap args...]
+  bash <(curl -fsSL https://raw.githubusercontent.com/${REPO_SLUG}/main/install.sh) [options] [args...]
 
 Options:
-  -h, --help     Show this help
+  -h, --help     Show this help, then the next script's help (extra args are forwarded)
   --dir DIR      Download destination (default: \$HOME/mac-forge)
   --ref REF      Branch for the tarball (default: main)
   -f, --force    Overwrite existing files in the destination with the tarball
-  --no-run       Download only; do not execute bootstrap.sh
+  --no-run       Download only; do not continue
 
 Environment:
   MAC_FORGE_DIR    Same as --dir
   MAC_FORGE_REF    Same as --ref
   MAC_FORGE_REPO   GitHub owner/name (default: ${REPO_SLUG})
 
-Anything else is forwarded to bootstrap.sh (-y, --dry-run, doctor, module names).
+Other arguments are passed through to bootstrap.sh (and then forge.sh).
 EOF
 }
 
@@ -115,12 +115,13 @@ if [ ! -t 0 ]; then
   unset -f attach_tty
 fi
 
+SHOW_HELP=false
 BOOTSTRAP_ARGS=()
 while [ $# -gt 0 ]; do
   case "$1" in
     -h|--help)
-      usage
-      exit 0
+      SHOW_HELP=true
+      shift
       ;;
     --dir)
       [ $# -ge 2 ] || die "--dir requires a path"
@@ -151,6 +152,16 @@ while [ $# -gt 0 ]; do
       ;;
   esac
 done
+
+if [ "$SHOW_HELP" = true ]; then
+  usage
+  printf '\n'
+  ensure_repo
+  [ -x "$DEST/bootstrap.sh" ] || chmod +x "$DEST/bootstrap.sh"
+  [ -f "$DEST/bootstrap.sh" ] || die "bootstrap.sh missing in $DEST"
+  cd "$DEST"
+  exec ./bootstrap.sh --help "${BOOTSTRAP_ARGS[@]+"${BOOTSTRAP_ARGS[@]}"}"
+fi
 
 ensure_repo
 

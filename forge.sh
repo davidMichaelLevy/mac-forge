@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# macos-bootstrap — apply modules. Prefer ./bootstrap.sh so the tree syncs first.
+# macos-bootstrap — apply modules to this Mac.
 #
-#   ./bootstrap.sh              # sync, then run every module
-#   ./bootstrap.sh packages git # sync, then selected modules
-#   ./forge.sh                  # run modules without syncing
+#   ./forge.sh                  # run every module
+#   ./forge.sh packages git     # run selected modules
 #
 set -euo pipefail
 
@@ -19,11 +18,10 @@ RUN_DOCTOR=false
 
 usage() {
   cat <<'EOF'
-macos-bootstrap — bootstrap a new Mac laptop
+mac-forge — apply configuration modules to this Mac
 
 Usage:
-  ./bootstrap.sh [options] [modules...]
-  ./forge.sh [options] [modules...]    skip sync; run modules only
+  ./forge.sh [options] [modules...]
 
 Options:
   -h, --help         Show this help
@@ -48,14 +46,13 @@ Modules (all of them, in order, if you omit the list):
   dotfiles    Symlink shell/editor config into $HOME
 
 Edit config/config.sh and config/Brewfile before the first real run.
-bootstrap.sh copies config.example.sh to config.sh if it is missing.
 Defaults come from config.defaults.sh; config.sh overrides them.
 
 Examples:
-  ./bootstrap.sh
-  ./bootstrap.sh --dry-run
-  ./bootstrap.sh -y packages git
-  ./bootstrap.sh doctor
+  ./forge.sh
+  ./forge.sh --dry-run
+  ./forge.sh -y packages git
+  ./forge.sh doctor
 EOF
 }
 

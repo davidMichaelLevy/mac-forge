@@ -37,7 +37,7 @@ On a new Mac:
 bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh)
 ```
 
-That downloads a tarball to `~/mac-forge` if needed and runs `bootstrap.sh`. Install never uses git; `bootstrap.sh` turns the tree into a checkout and fast-forwards it, then execs `forge.sh` so modules load from the updated tree. Pass-through examples:
+That downloads a tarball to `~/mac-forge` if needed and runs `bootstrap.sh`. Install never uses git; `bootstrap.sh` turns the tree into a checkout and fast-forwards it, re-execs itself so a just-pulled `bootstrap.sh` runs, then execs `forge.sh` so modules load from the updated tree. Pass-through examples:
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh) --dry-run
@@ -85,7 +85,7 @@ Set `MODULE_<name>_ENABLED=false` to skip a module (`22-chrome.sh` → `MODULE_C
 
 ```
 install.sh            Download a tarball if needed and run bootstrap.sh
-bootstrap.sh          Sync this checkout, then exec forge.sh
+bootstrap.sh          Sync this checkout, re-exec so bootstrap.sh is current, then exec forge.sh
 forge.sh              Apply modules (skip sync with this directly)
 lib/common.sh         Logging, dry-run, config loader, symlink helper
 lib/sync.sh           Git-init if needed, then fast-forward to origin
