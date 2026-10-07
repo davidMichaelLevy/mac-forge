@@ -5,8 +5,8 @@
 
 # --- identity -------------------------------------------------------------
 
-USER_NAME="David Levy"
-USER_EMAIL="david.michael.levy@gmail.com"
+USER_NAME=""
+USER_EMAIL=""
 
 COMPUTER_NAME=""
 HOST_NAME=""

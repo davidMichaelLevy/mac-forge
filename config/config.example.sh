@@ -6,8 +6,9 @@
 
 # --- identity -------------------------------------------------------------
 
-USER_NAME="David Levy"
-USER_EMAIL="david.michael.levy@gmail.com"
+# Set these in config.sh. Empty git/chrome/firefox keys follow these.
+USER_NAME=""
+USER_EMAIL=""
 
 # Sharing display name (ComputerName). Empty = generated, e.g.
 # dlevy-MacBook-Pro-16in-2024-X9K2 (login + model + screen + year + serial last 4).
