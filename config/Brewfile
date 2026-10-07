@@ -11,6 +11,7 @@ tap "empiricapps/zenithal"
 brew "git"
 brew "git-lfs"
 brew "gh"
+cask "claude-code"  # Anthropic Claude Code CLI
 
 # --- CLI: everyday tools --------------------------------------------------
 brew "bash"
@@ -59,6 +60,7 @@ brew "mas"
 cask "empiricapps/zenithal/tappie", trusted: true
 cask "rectangle"
 cask "raycast"
+cask "claude"
 cask "cursor"
 cask "pycharm"
 cask "visual-studio-code"
