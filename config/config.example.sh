@@ -53,6 +53,8 @@ EXCLUSIVE_CASK_CHOICES=(
 
 # true = 24-hour, false = 12-hour, empty = leave the current clock.
 MACOS_24_HOUR_CLOCK=true
+# false = Desktop and Documents stay local. true / empty = leave iCloud file sync.
+MACOS_ICLOUD_FILE_SYNC=false
 # Apple "Natural" scrolling (content follows your fingers). false = reversed.
 MACOS_NATURAL_SCROLL=false
 # HTTP/HTTPS handler (defaultbrowser name: firefox, chrome, safari).

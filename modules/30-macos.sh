@@ -166,6 +166,30 @@ apply_screenshots() {
   defaults_write com.apple.screencapture disable-shadow -bool true
 }
 
+apply_icloud_file_sync() {
+  local want="${MACOS_ICLOUD_FILE_SYNC:-}"
+
+  if [ -z "$want" ]; then
+    log_info "iCloud file sync: leave current"
+    return 0
+  fi
+
+  if is_truthy "$want"; then
+    log_info "iCloud file sync: leave enabled"
+    return 0
+  fi
+
+  if ! is_falsy "$want"; then
+    log_warn "MACOS_ICLOUD_FILE_SYNC=$want (use true, false, or empty)"
+    return 0
+  fi
+
+  log_info "iCloud file sync: off"
+  defaults_write com.apple.finder FXICloudDriveEnabled -bool false
+  defaults_write com.apple.finder FXICloudDriveDesktop -bool false
+  defaults_write com.apple.finder FXICloudDriveDocuments -bool false
+}
+
 apply_finder() {
   log_info "Finder"
   if is_truthy "${MACOS_SHOW_HIDDEN_FILES:-true}"; then
@@ -408,6 +432,7 @@ apply_keyboard
 apply_trackpad
 apply_screenshots
 apply_finder
+apply_icloud_file_sync
 apply_dock
 apply_safari
 apply_default_browser
