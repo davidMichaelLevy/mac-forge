@@ -23,7 +23,7 @@ defaults_write() {
     log_dim "[dry-run] defaults write $*"
     return 0
   fi
-  if ! defaults write "$@"; then
+  if ! run_user defaults write "$@"; then
     log_warn "defaults write failed: $*"
   fi
 }
@@ -191,12 +191,29 @@ apply_dock() {
 }
 
 apply_safari() {
+  local key wrote=true
   log_info "Safari (developer extras)"
-  defaults_write com.apple.Safari ShowFullURLInSmartSearchField -bool true
-  defaults_write com.apple.Safari IncludeDevelopMenu -bool true
-  defaults_write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+  if ! is_dry_run; then
+    osascript -e 'tell application "Safari" to quit' >/dev/null 2>&1 || true
+  fi
+  # These domains are not in Safari's SIP-protected container.
   defaults_write com.apple.Safari.SandboxBroker ShowDevelopMenu -bool true
   defaults_write NSGlobalDomain WebKitDeveloperExtras -bool true
+
+  # com.apple.Safari lives under Containers/ and fails without Full Disk Access.
+  for key in ShowFullURLInSmartSearchField IncludeDevelopMenu WebKitDeveloperExtrasEnabledPreferenceKey; do
+    if is_dry_run; then
+      log_dim "[dry-run] defaults write com.apple.Safari $key -bool true"
+      continue
+    fi
+    if ! run_user defaults write com.apple.Safari "$key" -bool true >/dev/null 2>&1; then
+      wrote=false
+    fi
+  done
+  if [ "$wrote" = false ]; then
+    log_warn "Safari container prefs need Full Disk Access for this terminal."
+    log_dim "Develop menu is set via Safari.SandboxBroker. For the full URL: Safari → Settings → Advanced, or grant Full Disk Access and re-run."
+  fi
 }
 
 confirm_default_browser_dialog() {
