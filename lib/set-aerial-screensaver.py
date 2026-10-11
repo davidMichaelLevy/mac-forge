@@ -78,8 +78,14 @@ def aerial_choice(asset_id: str) -> dict:
     }
 
 
+def plist_now() -> datetime:
+    # Binary plistlib.dump cannot serialize timezone-aware datetimes: it
+    # subtracts them from a naive 2001-01-01 epoch and raises TypeError.
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
 def aerial_section(asset_id: str) -> dict:
-    now = datetime.now(timezone.utc)
+    now = plist_now()
     return {
         "Content": {"Choices": [aerial_choice(asset_id)]},
         "LastSet": now,
