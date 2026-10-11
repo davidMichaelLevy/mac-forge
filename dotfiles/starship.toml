@@ -1,7 +1,12 @@
 "$schema" = "https://starship.rs/config-schema.json"
 
+# Two different newlines. add_newline is a blank line *above* the prompt.
+# $all still inserts $line_break before ❯ unless that module is disabled.
 add_newline = false
 command_timeout = 1000
+
+[line_break]
+disabled = true
 
 [character]
 success_symbol = "[❯](purple)"
