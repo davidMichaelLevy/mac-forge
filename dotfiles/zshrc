@@ -16,6 +16,19 @@ bindkey -e
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 
+# --- stderr ---------------------------------------------------------------
+# Color the interactive shell's fd 2. stdout is unchanged.
+if [[ -o interactive && -t 2 && -w /dev/tty ]]; then
+  () {
+    setopt local_options no_monitor
+    exec 2> >(
+      while IFS= read -r line || [[ -n $line ]]; do
+        printf '\e[31m%s\e[0m\n' "$line"
+      done >/dev/tty
+    )
+  }
+fi
+
 # --- editor & pager -------------------------------------------------------
 if command -v nvim >/dev/null 2>&1; then
   export EDITOR=nvim
