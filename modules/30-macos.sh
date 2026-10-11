@@ -217,12 +217,14 @@ apply_icloud_file_sync() {
   log_warn "Turn off Desktop & Documents Folders in iCloud Drive, then re-run."
 }
 
-icloud_photos_is_off() {
+icloud_photos_is_on() {
+  # Same idea as Desktop & Documents: only treat as on when something
+  # says so. Turning the switch off often leaves these keys unset.
   local val domain
   for domain in com.apple.CloudPhotosConfiguration com.apple.photos; do
     val="$(defaults read "$domain" CPLEnableiCloudPhotoLibrary 2>/dev/null || true)"
     case "$val" in
-      0|false|NO) return 0 ;;
+      1|true|YES) return 0 ;;
     esac
   done
   return 1
@@ -253,7 +255,7 @@ apply_icloud_photos_sync() {
     return 0
   fi
 
-  if icloud_photos_is_off; then
+  if ! icloud_photos_is_on; then
     log_success "iCloud Photos already off"
     return 0
   fi
