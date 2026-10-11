@@ -60,6 +60,7 @@ brew "mas"
 cask "empiricapps/zenithal/tappie", trusted: true
 cask "rectangle"
 cask "raycast"
+cask "crosspaste"
 cask "claude"
 cask "cursor"
 cask "pycharm"
