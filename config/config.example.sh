@@ -54,6 +54,7 @@ EXCLUSIVE_CASK_CHOICES=(
 # true = 24-hour, false = 12-hour, empty = leave the current clock.
 MACOS_24_HOUR_CLOCK=true
 # false = Desktop and Documents stay local. true / empty = leave iCloud file sync.
+# There is no CLI for this switch; forge opens iCloud Drive settings if they still sync.
 MACOS_ICLOUD_FILE_SYNC=false
 # Apple "Natural" scrolling (content follows your fingers). false = reversed.
 MACOS_NATURAL_SCROLL=false

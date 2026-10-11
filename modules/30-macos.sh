@@ -166,8 +166,26 @@ apply_screenshots() {
   defaults_write com.apple.screencapture disable-shadow -bool true
 }
 
+icloud_desktop_documents_on() {
+  # Desktop & Documents Folders is an Apple Account switch. Finder's
+  # FXICloudDrive* keys are status bits and do not turn it off.
+  if [ -L "$HOME/Desktop" ] || [ -L "$HOME/Documents" ]; then
+    return 0
+  fi
+  if xattr -p com.apple.icloud.desktop "$HOME/Desktop" >/dev/null 2>&1 \
+    || xattr -p com.apple.icloud.desktop "$HOME/Documents" >/dev/null 2>&1; then
+    return 0
+  fi
+  if [ -L "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Desktop" ] \
+    || [ -L "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Documents" ]; then
+    return 0
+  fi
+  return 1
+}
+
 apply_icloud_file_sync() {
   local want="${MACOS_ICLOUD_FILE_SYNC:-}"
+  local pane="x-apple.systempreferences:com.apple.systempreferences.AppleIDSettings?email/prefs/storage?root=APPLE_ACCOUNT&path=ICLOUD_SERVICE&dataclassId=com.apple.Dataclass.Ubiquity"
 
   if [ -z "$want" ]; then
     log_info "iCloud file sync: leave current"
@@ -185,9 +203,18 @@ apply_icloud_file_sync() {
   fi
 
   log_info "iCloud file sync: off"
-  defaults_write com.apple.finder FXICloudDriveEnabled -bool false
-  defaults_write com.apple.finder FXICloudDriveDesktop -bool false
-  defaults_write com.apple.finder FXICloudDriveDocuments -bool false
+  if is_dry_run; then
+    log_dim "[dry-run] open iCloud Drive settings if Desktop or Documents still sync"
+    return 0
+  fi
+
+  if ! icloud_desktop_documents_on; then
+    log_success "Desktop and Documents are already local"
+    return 0
+  fi
+
+  run_user open "$pane"
+  log_warn "Turn off Desktop & Documents Folders in iCloud Drive, then re-run."
 }
 
 apply_finder() {
