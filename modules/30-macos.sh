@@ -93,25 +93,36 @@ apply_clock() {
   fi
 
   if is_truthy "$clock"; then
-    log_info "Clock: 24-hour"
+    log_info "Clock: 24-hour (menu bar, lock screen, screensaver)"
     defaults_write NSGlobalDomain AppleICUForce24HourTime -bool true
+    defaults_write com.apple.menuextra.clock IsAnalog -bool false
     defaults_write com.apple.menuextra.clock Show24Hour -bool true
     defaults_write com.apple.menuextra.clock ShowAMPM -bool false
     if ! is_dry_run; then
-      defaults delete NSGlobalDomain AppleICUForce12HourTime >/dev/null 2>&1 || true
+      run_user defaults delete NSGlobalDomain AppleICUForce12HourTime >/dev/null 2>&1 || true
+      sudo defaults delete /Library/Preferences/.GlobalPreferences.plist AppleICUForce12HourTime >/dev/null 2>&1 || true
       run_ok sudo defaults write /Library/Preferences/.GlobalPreferences.plist AppleICUForce24HourTime -bool true
+      # Same large clock on screensaver, lock screen, and login window.
+      if [ -x /usr/sbin/sysadminctl ]; then
+        run_ok sudo /usr/sbin/sysadminctl -use12HourClockForLoginWindow off
+      fi
     fi
     return 0
   fi
 
   if is_falsy "$clock"; then
-    log_info "Clock: 12-hour"
+    log_info "Clock: 12-hour (menu bar, lock screen, screensaver)"
     defaults_write NSGlobalDomain AppleICUForce12HourTime -bool true
+    defaults_write com.apple.menuextra.clock IsAnalog -bool false
     defaults_write com.apple.menuextra.clock Show24Hour -bool false
     defaults_write com.apple.menuextra.clock ShowAMPM -bool true
     if ! is_dry_run; then
-      defaults delete NSGlobalDomain AppleICUForce24HourTime >/dev/null 2>&1 || true
-      run_ok sudo defaults write /Library/Preferences/.GlobalPreferences.plist AppleICUForce24HourTime -bool false
+      run_user defaults delete NSGlobalDomain AppleICUForce24HourTime >/dev/null 2>&1 || true
+      sudo defaults delete /Library/Preferences/.GlobalPreferences.plist AppleICUForce24HourTime >/dev/null 2>&1 || true
+      run_ok sudo defaults write /Library/Preferences/.GlobalPreferences.plist AppleICUForce12HourTime -bool true
+      if [ -x /usr/sbin/sysadminctl ]; then
+        run_ok sudo /usr/sbin/sysadminctl -use12HourClockForLoginWindow on
+      fi
     fi
     return 0
   fi
@@ -378,11 +389,11 @@ apply_apps() {
 
 restart_ui() {
   if is_dry_run; then
-    log_dim "[dry-run] killall Dock Finder SystemUIServer"
+    log_dim "[dry-run] killall Dock Finder SystemUIServer ControlCenter"
     return 0
   fi
-  log_info "Restarting Dock, Finder, and SystemUIServer"
-  killall Dock Finder SystemUIServer cfprefsd >/dev/null 2>&1 || true
+  log_info "Restarting Dock, Finder, SystemUIServer, and ControlCenter"
+  killall Dock Finder SystemUIServer ControlCenter cfprefsd >/dev/null 2>&1 || true
 }
 
 quit_system_settings
