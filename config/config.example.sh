@@ -56,6 +56,9 @@ MACOS_24_HOUR_CLOCK=true
 # false = Desktop and Documents stay local. true / empty = leave iCloud file sync.
 # There is no CLI for this switch; forge opens iCloud Drive settings if they still sync.
 MACOS_ICLOUD_FILE_SYNC=false
+# false = iCloud Photos off. There is no CLI; forge opens iCloud Photos
+# settings if sync still looks on.
+MACOS_ICLOUD_PHOTOS_SYNC=false
 # Apple "Natural" scrolling (content follows your fingers). false = reversed.
 MACOS_NATURAL_SCROLL=false
 # HTTP/HTTPS handler (defaultbrowser name: firefox, chrome, safari).

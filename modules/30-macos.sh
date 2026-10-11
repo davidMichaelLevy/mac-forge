@@ -217,6 +217,51 @@ apply_icloud_file_sync() {
   log_warn "Turn off Desktop & Documents Folders in iCloud Drive, then re-run."
 }
 
+icloud_photos_is_off() {
+  local val domain
+  for domain in com.apple.CloudPhotosConfiguration com.apple.photos; do
+    val="$(defaults read "$domain" CPLEnableiCloudPhotoLibrary 2>/dev/null || true)"
+    case "$val" in
+      0|false|NO) return 0 ;;
+    esac
+  done
+  return 1
+}
+
+apply_icloud_photos_sync() {
+  local want="${MACOS_ICLOUD_PHOTOS_SYNC:-}"
+  local pane="x-apple.systempreferences:com.apple.systempreferences.AppleIDSettings?email/prefs/storage?root=APPLE_ACCOUNT&path=ICLOUD_SERVICE&dataclassId=com.apple.Dataclass.CloudPhotos"
+
+  if [ -z "$want" ]; then
+    log_info "iCloud Photos: leave current"
+    return 0
+  fi
+
+  if is_truthy "$want"; then
+    log_info "iCloud Photos: leave enabled"
+    return 0
+  fi
+
+  if ! is_falsy "$want"; then
+    log_warn "MACOS_ICLOUD_PHOTOS_SYNC=$want (use true, false, or empty)"
+    return 0
+  fi
+
+  log_info "iCloud Photos: off"
+  if is_dry_run; then
+    log_dim "[dry-run] open iCloud Photos settings if sync still looks on"
+    return 0
+  fi
+
+  if icloud_photos_is_off; then
+    log_success "iCloud Photos already off"
+    return 0
+  fi
+
+  run_user open "$pane"
+  log_warn "Turn off iCloud Photos (or Photos → Settings → iCloud), choose Download if you want a local library, then re-run."
+}
+
 apply_finder() {
   log_info "Finder"
   if is_truthy "${MACOS_SHOW_HIDDEN_FILES:-true}"; then
@@ -460,6 +505,7 @@ apply_trackpad
 apply_screenshots
 apply_finder
 apply_icloud_file_sync
+apply_icloud_photos_sync
 apply_dock
 apply_safari
 apply_default_browser
