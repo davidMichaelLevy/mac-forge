@@ -9,7 +9,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | Module | What it does |
 | --- | --- |
 | `prereqs` | Xcode Command Line Tools, Rosetta 2 on Apple Silicon |
-| `homebrew` | Installs Homebrew if missing, then `brew update` |
+| `homebrew` | Installs Homebrew if missing, then `brew update`; schedules `brew upgrade` via `domt4/autoupdate` (not during the forge run) |
 | `packages` | Installs everything in `config/Brewfile`, then exclusive cask sets (Docker Desktop or OrbStack) |
 | `chrome` | Enable Chrome Google sign-in and sync, limited to `CHROME_GOOGLE_ACCOUNT` (empty = `USER_EMAIL`) |
 | `firefox` | Enable Firefox Sync for `FIREFOX_SYNC_ACCOUNT` (empty = `USER_EMAIL`) |

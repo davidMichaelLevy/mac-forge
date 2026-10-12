@@ -37,6 +37,14 @@ SSH_KEY_COMMENT=""
 # (creates a git repo if install used a tarball).
 SYNC_MAC_FORGE=true
 
+# --- homebrew (used when MODULE_HOMEBREW_ENABLED=true) --------------------
+
+# LaunchAgent via domt4/autoupdate. forge does not upgrade during a run.
+# Interval is a duration (1d) or a daily clock time in 24-hour HH:MM (22:00 = 10pm).
+HOMEBREW_AUTOUPDATE=true
+HOMEBREW_AUTOUPDATE_INTERVAL=22:00
+# HOMEBREW_AUTOUPDATE_GREEDY=true
+
 # --- packages (used when MODULE_PACKAGES_ENABLED=true) --------------------
 
 INSTALL_CASKS=true

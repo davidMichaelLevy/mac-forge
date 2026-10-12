@@ -68,3 +68,87 @@ if command_exists brew || is_dry_run; then
   export HOMEBREW_NO_ANALYTICS=1
   export HOMEBREW_NO_ENV_HINTS=1
 fi
+
+homebrew_autoupdate_status() {
+  run_user env PATH="$PATH" brew autoupdate status 2>/dev/null || true
+}
+
+homebrew_autoupdate_matches() {
+  local status="$1"
+  local greedy="$2"
+  local interval="$3"
+
+  printf '%s' "$status" | grep -q "installed and running" || return 1
+  printf '%s' "$status" | grep -qF "$interval" || return 1
+  printf '%s' "$status" | grep -q "Upgrade: formulae and casks" || return 1
+  printf '%s' "$status" | grep -q "Cleanup: yes" || return 1
+  printf '%s' "$status" | grep -q "AC power only: yes" || return 1
+  if is_truthy "$greedy"; then
+    printf '%s' "$status" | grep -q "Greedy cask upgrades: yes" || return 1
+  else
+    printf '%s' "$status" | grep -q "Greedy cask upgrades: yes" && return 1
+  fi
+  return 0
+}
+
+apply_homebrew_autoupdate() {
+  local want interval greedy status
+  want="${HOMEBREW_AUTOUPDATE:-}"
+  interval="${HOMEBREW_AUTOUPDATE_INTERVAL:-22:00}"
+  greedy="${HOMEBREW_AUTOUPDATE_GREEDY:-false}"
+
+  if [ -z "$want" ]; then
+    log_info "Homebrew autoupdate: leave current"
+    return 0
+  fi
+
+  if ! is_truthy "$want" && ! is_falsy "$want"; then
+    log_warn "HOMEBREW_AUTOUPDATE=$want (use true, false, or empty)"
+    return 0
+  fi
+
+  if is_dry_run; then
+    if is_truthy "$want"; then
+      log_dim "[dry-run] brew tap domt4/autoupdate && brew autoupdate start $interval --upgrade --cleanup --ac-only"
+    else
+      log_dim "[dry-run] brew autoupdate stop"
+    fi
+    return 0
+  fi
+
+  if ! command_exists brew; then
+    return 0
+  fi
+
+  if is_falsy "$want"; then
+    if homebrew_autoupdate_status | grep -q "installed and running"; then
+      run_brew autoupdate stop
+      log_success "Homebrew autoupdate stopped"
+    else
+      log_info "Homebrew autoupdate already off"
+    fi
+    return 0
+  fi
+
+  log_info "Homebrew autoupdate: $interval"
+  run_brew tap domt4/autoupdate
+  if ! run_user env PATH="$PATH" brew trust --command domt4/autoupdate/autoupdate >/dev/null 2>&1; then
+    log_dim "brew trust skipped (already trusted or older Homebrew)"
+  fi
+
+  status="$(homebrew_autoupdate_status)"
+  if homebrew_autoupdate_matches "$status" "$greedy" "$interval"; then
+    log_success "Homebrew autoupdate already scheduled"
+    return 0
+  fi
+
+  run_user env PATH="$PATH" brew autoupdate delete >/dev/null 2>&1 || true
+  if is_truthy "$greedy"; then
+    run_brew autoupdate start "$interval" --upgrade --cleanup --ac-only --greedy
+  else
+    run_brew autoupdate start "$interval" --upgrade --cleanup --ac-only
+  fi
+  log_success "Homebrew autoupdate scheduled ($interval)"
+}
+
+apply_homebrew_autoupdate

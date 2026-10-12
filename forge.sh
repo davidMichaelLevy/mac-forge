@@ -33,7 +33,7 @@ Options:
 
 Modules (all of them, in order, if you omit the list):
   prereqs     Xcode Command Line Tools, Rosetta
-  homebrew    Install Homebrew and put it on PATH
+  homebrew    Install Homebrew, then schedule brew upgrade (LaunchAgent)
   packages    Brewfile formulae, casks, and exclusive sets (Docker or OrbStack)
   chrome      Google Chrome sign-in and sync for your Google account
   firefox     Firefox Account sign-in and Sync

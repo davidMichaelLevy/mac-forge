@@ -43,6 +43,17 @@ MAC_FORGE_REPO="davidMichaelLevy/mac-forge"
 
 INSTALL_ROSETTA=true
 
+# --- homebrew (used when MODULE_HOMEBREW_ENABLED=true) --------------------
+
+# true = LaunchAgent runs brew upgrade on a schedule. false = stop it.
+# empty = leave whatever is already configured.
+# forge itself still uses brew bundle --no-upgrade.
+HOMEBREW_AUTOUPDATE=true
+# Duration (30m, 12h, 1d) or a daily clock time in 24-hour HH:MM (22:00 is 10pm).
+HOMEBREW_AUTOUPDATE_INTERVAL=22:00
+# true = also upgrade casks that update themselves (Chrome, Slack, …).
+HOMEBREW_AUTOUPDATE_GREEDY=false
+
 # --- packages (used when MODULE_PACKAGES_ENABLED=true) --------------------
 
 INSTALL_CASKS=true
