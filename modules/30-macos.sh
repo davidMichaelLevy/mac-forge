@@ -19,10 +19,6 @@ if ! is_macos && ! is_dry_run; then
 fi
 
 defaults_write() {
-  if is_dry_run; then
-    log_dim "[dry-run] defaults write $*"
-    return 0
-  fi
   if ! run_user defaults write "$@"; then
     log_warn "defaults write failed: $*"
   fi
@@ -208,11 +204,7 @@ apply_icloud_file_sync() {
     return 0
   fi
 
-  if is_dry_run; then
-    log_dim "[dry-run] open iCloud Drive settings"
-  else
-    run_user open "$pane"
-  fi
+  run_user open "$pane"
   log_task "Turn off Desktop & Documents Folders in iCloud Drive, then re-run."
 }
 
@@ -254,11 +246,7 @@ apply_icloud_photos_sync() {
     return 0
   fi
 
-  if is_dry_run; then
-    log_dim "[dry-run] open iCloud Photos settings"
-  else
-    run_user open "$pane"
-  fi
+  run_user open "$pane"
   log_task "Turn off iCloud Photos (or Photos → Settings → iCloud), choose Download if you want a local library, then re-run."
 }
 
@@ -319,11 +307,7 @@ apply_icloud_calendar_sync() {
     return 0
   fi
 
-  if is_dry_run; then
-    log_dim "[dry-run] open iCloud Calendar settings"
-  else
-    run_user open "$pane"
-  fi
+  run_user open "$pane"
   log_task "Turn off Calendars in iCloud (System Settings → Apple Account → iCloud), then re-run."
 }
 
@@ -589,12 +573,8 @@ apply_security() {
   log_info "Security"
   defaults_write com.apple.screensaver askForPassword -int 1
   defaults_write com.apple.screensaver askForPasswordDelay -int 0
-  if is_dry_run; then
-    log_dim "[dry-run] enable application firewall"
-  else
-    if [ -x /usr/libexec/ApplicationFirewall/socketfilterfw ]; then
-      run_ok sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
-    fi
+  if [ -x /usr/libexec/ApplicationFirewall/socketfilterfw ]; then
+    run_ok sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
   fi
 }
 
