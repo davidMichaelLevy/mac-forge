@@ -362,6 +362,65 @@ apply_dock() {
   fi
 }
 
+displaylink_app_path() {
+  local p
+  for p in \
+    "/Applications/DisplayLink Manager.app" \
+    "/Applications/DisplayLink/DisplayLink Manager.app"; do
+    if [ -d "$p" ]; then
+      printf '%s' "$p"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# granted / denied / unknown — Screen Recording lives in TCC and is often unreadable.
+displaylink_screen_recording_state() {
+  local script="$MACOS_BOOTSTRAP_ROOT/lib/displaylink-screen-recording.py"
+  if ! command_exists python3 || [ ! -f "$script" ]; then
+    printf '%s' "unknown"
+    return 0
+  fi
+  run_user python3 "$script" 2>/dev/null || printf '%s' "unknown"
+}
+
+apply_displaylink() {
+  local app pane state
+  pane="x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
+
+  log_info "DisplayLink Manager"
+  app="$(displaylink_app_path || true)"
+  if [ -z "$app" ]; then
+    if is_dry_run; then
+      log_dim "[dry-run] install DisplayLink Manager from the Brewfile"
+      return 0
+    fi
+    log_dim "DisplayLink Manager is not installed (run packages)"
+    return 0
+  fi
+
+  if is_dry_run; then
+    log_dim "[dry-run] launch DisplayLink Manager and check Screen Recording"
+    return 0
+  fi
+
+  run_user open "$app" >/dev/null 2>&1 || true
+  state="$(displaylink_screen_recording_state)"
+  case "$state" in
+    granted)
+      log_success "Screen Recording already granted"
+      ;;
+    denied)
+      run_user open "$pane"
+      log_task "Grant Screen Recording to DisplayLink Manager, quit and reopen it, then re-run."
+      ;;
+    *)
+      log_reminder "Grant Screen Recording to DisplayLink Manager (Privacy & Security) so DisplayLink displays work. Reboot once if they stay blank."
+      ;;
+  esac
+}
+
 apply_safari() {
   local key wrote=true
   log_info "Safari (developer extras)"
@@ -578,6 +637,7 @@ apply_icloud_calendar_sync
 apply_dock
 apply_safari
 apply_default_browser
+apply_displaylink
 apply_security
 apply_apps
 restart_ui

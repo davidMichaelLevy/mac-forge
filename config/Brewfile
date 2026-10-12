@@ -61,6 +61,7 @@ cask "empiricapps/zenithal/tappie", trusted: true
 cask "rectangle"
 cask "raycast"
 cask "crosspaste"
+cask "displaylink"  # DisplayLink Manager; Screen Recording is a leftover user task
 cask "claude"
 cask "cursor"
 cask "pycharm"

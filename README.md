@@ -21,7 +21,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `ssh` | `ed25519` key, macOS Keychain agent, prints the public key for GitHub |
 | `dotfiles` | Symlinks zsh, gitignore, EditorConfig, and Starship into `$HOME` |
 
-Default apps from the Brewfile include Ghostty, Kitty, iTerm2, Rectangle, Raycast, CrossPaste, Claude, Cursor, PyCharm, VS Code, Meld, Firefox, Chrome, Brave, Tor Browser, Bitwarden, Signal, Slack, Dropbox, IINA, TIDAL, Tappie, Stats, and Keka. Claude Code is installed as a cask. Docker Desktop or OrbStack is chosen with `EXCLUSIVE_CASK_CHOICES` in config (not both).
+Default apps from the Brewfile include Ghostty, Kitty, iTerm2, Rectangle, Raycast, CrossPaste, DisplayLink Manager, Claude, Cursor, PyCharm, VS Code, Meld, Firefox, Chrome, Brave, Tor Browser, Bitwarden, Signal, Slack, Dropbox, IINA, TIDAL, Tappie, Stats, and Keka. Claude Code is installed as a cask. Docker Desktop or OrbStack is chosen with `EXCLUSIVE_CASK_CHOICES` in config (not both). DisplayLink Manager needs Screen Recording in System Settings before a DisplayLink dock will drive extra monitors.
 
 ## Requirements
 
