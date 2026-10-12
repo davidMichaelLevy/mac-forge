@@ -43,7 +43,7 @@ Modules (all of them, in order, if you omit the list):
   shell       Make sure zsh is the login shell
   git         user.name, user.email, sane defaults, Meld as diff/merge tool
   ssh         ed25519 key plus macOS keychain agent
-  dotfiles    Symlink shell/editor config into $HOME
+  dotfiles    Copy shell/editor config into $HOME, then symlink the usual names
 
 Edit config/config.sh and config/Brewfile before the first real run.
 Defaults come from config.defaults.sh; config.sh overrides them.
