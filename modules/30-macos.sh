@@ -264,6 +264,72 @@ apply_icloud_photos_sync() {
   log_warn "Turn off iCloud Photos (or Photos → Settings → iCloud), choose Download if you want a local library, then re-run."
 }
 
+icloud_calendar_is_on() {
+  # Prompt only when MobileMeAccounts says Calendars is enabled.
+  # Missing Enabled is treated as off so we do not keep opening Settings.
+  if ! command_exists python3; then
+    return 1
+  fi
+  python3 -c '
+import pathlib, plistlib, sys
+path = pathlib.Path.home() / "Library/Preferences/MobileMeAccounts.plist"
+if not path.is_file():
+    raise SystemExit(1)
+try:
+    data = plistlib.loads(path.read_bytes())
+except Exception:
+    raise SystemExit(1)
+for account in data.get("Accounts") or []:
+    if not isinstance(account, dict):
+        continue
+    for service in account.get("Services") or []:
+        if not isinstance(service, dict):
+            continue
+        name = str(service.get("Name") or service.get("ServiceName") or "")
+        sid = str(service.get("ServiceID") or "")
+        blob = f"{name} {sid}".upper()
+        if "CALENDAR" not in blob:
+            continue
+        if service.get("Enabled") in (True, 1, "1"):
+            raise SystemExit(0)
+raise SystemExit(1)
+' >/dev/null 2>&1
+}
+
+apply_icloud_calendar_sync() {
+  local want="${MACOS_ICLOUD_CALENDAR_SYNC:-}"
+  local pane="x-apple.systempreferences:com.apple.systempreferences.AppleIDSettings?email/prefs/storage?root=APPLE_ACCOUNT&path=ICLOUD_SERVICE&dataclassId=com.apple.Dataclass.Calendars"
+
+  if [ -z "$want" ]; then
+    log_info "iCloud Calendar: leave current"
+    return 0
+  fi
+
+  if is_truthy "$want"; then
+    log_info "iCloud Calendar: leave enabled"
+    return 0
+  fi
+
+  if ! is_falsy "$want"; then
+    log_warn "MACOS_ICLOUD_CALENDAR_SYNC=$want (use true, false, or empty)"
+    return 0
+  fi
+
+  log_info "iCloud Calendar: off"
+  if is_dry_run; then
+    log_dim "[dry-run] open iCloud Calendar settings if sync still looks on"
+    return 0
+  fi
+
+  if ! icloud_calendar_is_on; then
+    log_success "iCloud Calendar already off"
+    return 0
+  fi
+
+  run_user open "$pane"
+  log_warn "Turn off Calendars in iCloud (System Settings → Apple Account → iCloud), then re-run."
+}
+
 apply_finder() {
   log_info "Finder"
   if is_truthy "${MACOS_SHOW_HIDDEN_FILES:-true}"; then
@@ -508,6 +574,7 @@ apply_screenshots
 apply_finder
 apply_icloud_file_sync
 apply_icloud_photos_sync
+apply_icloud_calendar_sync
 apply_dock
 apply_safari
 apply_default_browser

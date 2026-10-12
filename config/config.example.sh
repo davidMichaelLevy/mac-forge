@@ -59,6 +59,9 @@ MACOS_ICLOUD_FILE_SYNC=false
 # false = iCloud Photos off. There is no CLI; forge opens iCloud Photos
 # settings if sync still looks on.
 MACOS_ICLOUD_PHOTOS_SYNC=false
+# false = iCloud Calendar off. There is no CLI; forge opens iCloud Calendar
+# settings if MobileMeAccounts still shows Calendars enabled.
+MACOS_ICLOUD_CALENDAR_SYNC=false
 # Apple "Natural" scrolling (content follows your fingers). false = reversed.
 MACOS_NATURAL_SCROLL=false
 # HTTP/HTTPS handler (defaultbrowser name: firefox, chrome, safari).
