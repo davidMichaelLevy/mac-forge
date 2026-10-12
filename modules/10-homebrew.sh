@@ -30,7 +30,7 @@ install_official_homebrew() {
         { print }
       ' <<<"$installer"
     )"
-    NONINTERACTIVE=1 /bin/bash -c "$installer"
+    _run_with_child_logs bash env NONINTERACTIVE=1 /bin/bash -c "$installer"
     prefix=""
     if [ -x /opt/homebrew/bin/brew ]; then
       prefix="$(/opt/homebrew/bin/brew --prefix)"
@@ -42,7 +42,7 @@ install_official_homebrew() {
       run chown -R "${SUDO_USER}:${group}" "$prefix"
     fi
   else
-    /bin/bash -c "$installer"
+    _run_with_child_logs bash /bin/bash -c "$installer"
   fi
 }
 
@@ -70,7 +70,7 @@ if command_exists brew || is_dry_run; then
 fi
 
 homebrew_autoupdate_status() {
-  run_user env PATH="$PATH" brew autoupdate status 2>/dev/null || true
+  run_user_capture env PATH="$PATH" brew autoupdate status 2>/dev/null || true
 }
 
 homebrew_autoupdate_matches() {

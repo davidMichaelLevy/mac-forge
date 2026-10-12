@@ -208,13 +208,57 @@ macos_bootstrap_write_effective_config() {
 
 # --- run wrappers ---------------------------------------------------------
 
-# Run a command, or print it during --dry-run.
+_child_tag() {
+  local arg skip=
+  for arg in "$@"; do
+    if [ -n "$skip" ]; then
+      skip=
+      continue
+    fi
+    case "$arg" in
+      env|sudo) continue ;;
+      -u|-H) skip=1; continue ;;
+      --) continue ;;
+      *=*) continue ;;
+      -*) continue ;;
+      *)
+        printf '%s' "${arg##*/}"
+        return 0
+        ;;
+    esac
+  done
+  printf '%s' "cmd"
+}
+
+_prefix_child_lines() {
+  local tag="$1"
+  local line
+  while IFS= read -r line || [ -n "$line" ]; do
+    printf '    │ %s │ %s\n' "$tag" "$line"
+  done
+}
+
+_run_with_child_logs() {
+  local tag="$1"
+  local ec shopts
+  shift
+  shopts="$-"
+  set +e
+  "$@" 2>&1 | _prefix_child_lines "$tag"
+  ec="${PIPESTATUS[0]}"
+  case "$shopts" in
+    *e*) set -e ;;
+  esac
+  return "$ec"
+}
+
+# Run a command, or print it during --dry-run. Child stdout/stderr is tagged.
 run() {
   if is_dry_run; then
     log_dim "[dry-run] $*"
     return 0
   fi
-  "$@"
+  _run_with_child_logs "$(_child_tag "$@")" "$@"
 }
 
 # Like run, but swallow a non-zero exit and warn instead of aborting.
@@ -223,10 +267,10 @@ run_ok() {
     log_dim "[dry-run] $*"
     return 0
   fi
-  if ! "$@"; then
+  if ! _run_with_child_logs "$(_child_tag "$@")" "$@"; then
     log_warn "Command failed (continuing): $*"
-    return 0
   fi
+  return 0
 }
 
 confirm() {
@@ -546,6 +590,19 @@ macos_bootstrap_adopt_sudo_identity() {
 
 # Homebrew/pyenv refuse euid 0. Run those tools as the login user under sudo.
 run_user() {
+  if is_dry_run; then
+    log_dim "[dry-run] $*"
+    return 0
+  fi
+  if running_via_sudo; then
+    _run_with_child_logs "$(_child_tag "$@")" sudo -u "$SUDO_USER" -H -- "$@"
+  else
+    _run_with_child_logs "$(_child_tag "$@")" "$@"
+  fi
+}
+
+# Like run_user, but leave stdout/stderr untagged (for $(...) captures).
+run_user_capture() {
   if is_dry_run; then
     log_dim "[dry-run] $*"
     return 0

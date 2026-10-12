@@ -382,7 +382,7 @@ displaylink_screen_recording_state() {
     printf '%s' "unknown"
     return 0
   fi
-  run_user python3 "$script" 2>/dev/null || printf '%s' "unknown"
+  run_user_capture python3 "$script" 2>/dev/null || printf '%s' "unknown"
 }
 
 apply_displaylink() {
@@ -576,7 +576,7 @@ apply_screensaver() {
     return 0
   fi
 
-  if result="$(run_user python3 "$MACOS_BOOTSTRAP_ROOT/lib/set-aerial-screensaver.py" "$want")"; then
+  if result="$(run_user_capture python3 "$MACOS_BOOTSTRAP_ROOT/lib/set-aerial-screensaver.py" "$want")"; then
     label="${result%%|*}"
     log_success "Screensaver set to ${label:-$want}"
     run_user killall WallpaperAgent >/dev/null 2>&1 || true
