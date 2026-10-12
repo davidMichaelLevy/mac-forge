@@ -19,7 +19,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `shell` | Confirms **zsh** is the login shell; registers Homebrew bash in `/etc/shells` |
 | `git` | `user.name` / `user.email` from `GIT_USER_NAME` / `GIT_USER_EMAIL` (empty = `USER_NAME` / `USER_EMAIL`), `main` as default branch, rebase-on-pull, Meld as diff/merge tool |
 | `ssh` | `ed25519` key, macOS Keychain agent, prints the public key for GitHub |
-| `dotfiles` | Copies zsh, gitignore, EditorConfig, and Starship into `~/.config/mac-forge/dotfiles`, then symlinks those copies into `$HOME` |
+| `dotfiles` | Copies starter files into `~/.config/mac-forge/dotfiles`. `~/.zshrc` and `~/.zprofile` are real files that source the store (installers can append). Other names are symlinks to the store. |
 
 Default apps from the Brewfile include Ghostty, Kitty, iTerm2, Rectangle, Raycast, CrossPaste, DisplayLink Manager, Claude, Cursor, PyCharm, VS Code, Meld, Firefox, Chrome, Brave, Tor Browser, Bitwarden, Signal, Slack, Dropbox, IINA, TIDAL, Tappie, Stats, and Keka. Claude Code is installed as a cask. Docker Desktop or OrbStack is chosen with `EXCLUSIVE_CASK_CHOICES` in config (not both). DisplayLink Manager needs Screen Recording in System Settings before a DisplayLink dock will drive extra monitors.
 
@@ -67,8 +67,8 @@ Nothing in the scripts is meant to be edited for day-to-day taste. Change these 
 
 1. **`config/config.sh`** — overlay on `config.defaults.sh` (identity including `USER_NAME` / `USER_EMAIL`, ComputerName, `MODULE_<name>_ENABLED` kill switches, Docker vs OrbStack, clock, scroll, browser, keep-apps, Python, Chrome, Firefox, Git). Missing keys keep the default. Start from `config.example.sh` (copied if `config.sh` is missing). The merge is written to `config/effective.config` and then sourced as the runtime config.
 2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids. Exclusive pairs (Docker vs OrbStack) are not listed here; they come from config.
-3. **`dotfiles/`** — zsh, Starship, and the global gitignore. Re-run forge to copy them into `~/.config/mac-forge/dotfiles` and refresh the `$HOME` symlinks. The checkout is not the live target.
-4. **`~/.zshrc.local`** — machine-only aliases and secrets. The linked `~/.zshrc` sources it if present.
+3. **`dotfiles/`** — zsh, Starship, and the global gitignore. Re-run forge to copy them into `~/.config/mac-forge/dotfiles`. `~/.zshrc` / `~/.zprofile` source that store; other names are symlinks. The checkout is not the live target.
+4. **`~/.zshrc.local`** — machine-only aliases and secrets. The managed zshrc sources it if present.
 
 To run a subset:
 
@@ -94,14 +94,14 @@ config/Brewfile       Homebrew bundle list
 config/config.defaults.sh Project defaults (always loaded first)
 config/config.example.sh  Starter overlay (copied to config.sh)
 config/effective.config   Merged snapshot (generated, gitignored)
-dotfiles/             Starter files; copied into $HOME, then linked
+dotfiles/             Starter files; copied into ~/.config/mac-forge/dotfiles
 scripts/check.sh      bash -n + shellcheck
 ```
 
 ## Safety
 
 - **`--dry-run`** prints commands and writes nothing.
-- Existing `~/.zshrc` (and other dotfiles) that are not already links to the home store are moved aside as `*.bak.<timestamp>`.
+- A `~/.zshrc` or `~/.zprofile` that is still a symlink is replaced with a source wrapper. Other existing files that are not already links to the home store are moved aside as `*.bak.<timestamp>`. An existing real `~/.zshrc` without the wrapper gets the source block prepended so installer lines are kept.
 - `~/.ssh/config` is appended with a marked block, not overwritten. An existing key is left alone.
 - Git `user.name` / `user.email` are only written when `GIT_USER_NAME` / `GIT_USER_EMAIL` are set (they default to `USER_NAME` / `USER_EMAIL`).
 - macOS defaults are not automatically reverted. Keep notes if you need to undo a setting.

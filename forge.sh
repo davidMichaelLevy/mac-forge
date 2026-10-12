@@ -43,7 +43,7 @@ Modules (all of them, in order, if you omit the list):
   shell       Make sure zsh is the login shell
   git         user.name, user.email, sane defaults, Meld as diff/merge tool
   ssh         ed25519 key plus macOS keychain agent
-  dotfiles    Copy shell/editor config into $HOME, then symlink the usual names
+  dotfiles    Copy shell/editor config into $HOME; ~/.zshrc sources the store
 
 Edit config/config.sh and config/Brewfile before the first real run.
 Defaults come from config.defaults.sh; config.sh overrides them.
@@ -211,7 +211,18 @@ run_doctor() {
   fi
 
   printf '\n    Dotfiles\n'
-  for link in .zshrc .zprofile .gitignore_global .editorconfig; do
+  for link in .zshrc .zprofile; do
+    if [ -L "$HOME/$link" ]; then
+      log_warn "$(printf '%-11s symlink (should source ~/.config/mac-forge/dotfiles)' "$link")"
+    elif [ -f "$HOME/$link" ] && grep -qF "mac-forge/dotfiles/${link#.}" "$HOME/$link"; then
+      log_success "$(printf '%-11s sources the mac-forge store' "$link")"
+    elif [ -e "$HOME/$link" ]; then
+      log_warn "$(printf '%-11s exists (does not source the store)' "$link")"
+    else
+      log_warn "$(printf '%-11s missing' "$link")"
+    fi
+  done
+  for link in .gitignore_global .editorconfig; do
     if [ -L "$HOME/$link" ]; then
       log_success "$(printf '%-11s -> %s' "$link" "$(readlink "$HOME/$link")")"
     elif [ -e "$HOME/$link" ]; then

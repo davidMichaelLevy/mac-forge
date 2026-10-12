@@ -1,4 +1,4 @@
-# ~/.zshrc — interactive shell. Managed by macos-bootstrap.
+# Interactive zsh. Copied to ~/.config/mac-forge/dotfiles/zshrc and sourced from ~/.zshrc.
 
 # --- history --------------------------------------------------------------
 HISTFILE="${HOME}/.zsh_history"

@@ -1,4 +1,4 @@
-# ~/.zprofile — login shell. Keep PATH setup here, interactive config in ~/.zshrc.
+# Login zsh PATH setup. Copied to ~/.config/mac-forge/dotfiles/zprofile and sourced from ~/.zprofile.
 
 # Homebrew (Apple Silicon first, then Intel)
 if [[ -x /opt/homebrew/bin/brew ]]; then
