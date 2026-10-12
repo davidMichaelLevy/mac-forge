@@ -72,8 +72,9 @@ if is_macos && [ -f "$KEY_PATH" ] && ! is_dry_run; then
 fi
 
 if [ -f "$PUB_PATH" ]; then
-  log_info "Public key (add this at https://github.com/settings/keys):"
+  log_reminder "Add your SSH public key at https://github.com/settings/keys"
   log_dim "$(cat "$PUB_PATH")"
 elif is_dry_run; then
+  log_reminder "Add your SSH public key at https://github.com/settings/keys"
   log_dim "[dry-run] would print $PUB_PATH"
 fi

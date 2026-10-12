@@ -53,6 +53,7 @@ if is_dry_run; then
   if [ -n "$account" ]; then
     chrome_defaults RestrictSigninToPattern -string "^$(chrome_email_pattern "$account")\$"
   fi
+  log_reminder "Open Chrome and sign in once to start sync (chrome://settings/syncSetup)."
   return 0 2>/dev/null || exit 0
 fi
 
@@ -67,4 +68,4 @@ if [ -n "$account" ]; then
 fi
 
 log_success "Chrome will sign in and sync as ${account:-any Google account}"
-log_info "Open Chrome and sign in once to start sync (chrome://settings/syncSetup)."
+log_reminder "Open Chrome and sign in once to start sync (chrome://settings/syncSetup)."

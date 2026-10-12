@@ -203,18 +203,17 @@ apply_icloud_file_sync() {
   fi
 
   log_info "iCloud file sync: off"
-  if is_dry_run; then
-    log_dim "[dry-run] open iCloud Drive settings if Desktop or Documents still sync"
-    return 0
-  fi
-
   if ! icloud_desktop_documents_on; then
     log_success "Desktop and Documents are already local"
     return 0
   fi
 
-  run_user open "$pane"
-  log_warn "Turn off Desktop & Documents Folders in iCloud Drive, then re-run."
+  if is_dry_run; then
+    log_dim "[dry-run] open iCloud Drive settings"
+  else
+    run_user open "$pane"
+  fi
+  log_task "Turn off Desktop & Documents Folders in iCloud Drive, then re-run."
 }
 
 icloud_photos_is_on() {
@@ -250,18 +249,17 @@ apply_icloud_photos_sync() {
   fi
 
   log_info "iCloud Photos: off"
-  if is_dry_run; then
-    log_dim "[dry-run] open iCloud Photos settings if sync still looks on"
-    return 0
-  fi
-
   if ! icloud_photos_is_on; then
     log_success "iCloud Photos already off"
     return 0
   fi
 
-  run_user open "$pane"
-  log_warn "Turn off iCloud Photos (or Photos → Settings → iCloud), choose Download if you want a local library, then re-run."
+  if is_dry_run; then
+    log_dim "[dry-run] open iCloud Photos settings"
+  else
+    run_user open "$pane"
+  fi
+  log_task "Turn off iCloud Photos (or Photos → Settings → iCloud), choose Download if you want a local library, then re-run."
 }
 
 icloud_calendar_is_on() {
@@ -316,18 +314,17 @@ apply_icloud_calendar_sync() {
   fi
 
   log_info "iCloud Calendar: off"
-  if is_dry_run; then
-    log_dim "[dry-run] open iCloud Calendar settings if sync still looks on"
-    return 0
-  fi
-
   if ! icloud_calendar_is_on; then
     log_success "iCloud Calendar already off"
     return 0
   fi
 
-  run_user open "$pane"
-  log_warn "Turn off Calendars in iCloud (System Settings → Apple Account → iCloud), then re-run."
+  if is_dry_run; then
+    log_dim "[dry-run] open iCloud Calendar settings"
+  else
+    run_user open "$pane"
+  fi
+  log_task "Turn off Calendars in iCloud (System Settings → Apple Account → iCloud), then re-run."
 }
 
 apply_finder() {
@@ -386,8 +383,7 @@ apply_safari() {
     fi
   done
   if [ "$wrote" = false ]; then
-    log_warn "Safari container prefs need Full Disk Access for this terminal."
-    log_dim "Develop menu is set via Safari.SandboxBroker. For the full URL: Safari → Settings → Advanced, or grant Full Disk Access and re-run."
+    log_task "Grant this terminal Full Disk Access and re-run, or set Safari → Settings → Advanced → Show full website address."
   fi
 }
 
@@ -464,8 +460,12 @@ apply_default_browser() {
   dialog_pid=$!
   if defaultbrowser "$want"; then
     wait "$dialog_pid" 2>/dev/null || true
-    log_success "Default browser set to $want"
-    log_dim "If macOS still shows a confirmation dialog, click Use \"$want\"."
+    current="$(defaultbrowser 2>/dev/null | awk '/^\*/ { print $2; exit }' || true)"
+    if [ "$current" = "$want" ]; then
+      log_success "Default browser set to $want"
+    else
+      log_task "Click Use \"$want\" in the macOS confirmation dialog, then re-run."
+    fi
   else
     kill "$dialog_pid" 2>/dev/null || true
     wait "$dialog_pid" 2>/dev/null || true

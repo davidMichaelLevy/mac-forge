@@ -63,6 +63,7 @@ fi
 
 if is_dry_run; then
   firefox_enable_sync
+  log_reminder "Open Firefox and sign in once to start sync (about:preferences#sync)."
   return 0 2>/dev/null || exit 0
 fi
 
@@ -72,4 +73,4 @@ killall Firefox >/dev/null 2>&1 || true
 firefox_enable_sync
 
 log_success "Firefox Sync is enabled${account:+ for $account}"
-log_info "Open Firefox and sign in once to start sync (about:preferences#sync)."
+log_reminder "Open Firefox and sign in once to start sync (about:preferences#sync)."

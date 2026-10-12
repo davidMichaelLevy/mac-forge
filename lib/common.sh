@@ -8,6 +8,10 @@ MACOS_BOOTSTRAP_COMMON_LOADED=1
 
 DRY_RUN="${DRY_RUN:-false}"
 ASSUME_YES="${ASSUME_YES:-false}"
+USER_TASK_COUNT=0
+USER_TASKS=()
+USER_REMINDER_COUNT=0
+USER_REMINDERS=()
 
 # --- colors ---------------------------------------------------------------
 
@@ -15,6 +19,8 @@ _c_blue=""
 _c_green=""
 _c_yellow=""
 _c_red=""
+_c_magenta=""
+_c_cyan=""
 _c_dim=""
 _c_bold=""
 _c_reset=""
@@ -26,6 +32,8 @@ if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
     _c_green="$(tput setaf 2)"
     _c_yellow="$(tput setaf 3)"
     _c_red="$(tput setaf 1)"
+    _c_magenta="$(tput setaf 5)"
+    _c_cyan="$(tput setaf 6)"
     _c_dim="$(tput dim)"
     _c_bold="$(tput bold)"
     _c_reset="$(tput sgr0)"
@@ -38,6 +46,49 @@ log_success() { printf '    %s✓%s %s\n' "$_c_green" "$_c_reset" "$*"; }
 log_warn()    { printf '    %s!%s %s\n' "$_c_yellow" "$_c_reset" "$*" >&2; }
 log_error()   { printf '    %s✗%s %s\n' "$_c_red" "$_c_reset" "$*" >&2; }
 log_dim()     { printf '    %s%s%s\n' "$_c_dim" "$*" "$_c_reset"; }
+
+log_task() {
+  USER_TASK_COUNT=$((USER_TASK_COUNT + 1))
+  USER_TASKS+=("$*")
+  printf '    %s▸%s %s%d.%s %s\n' \
+    "$_c_magenta" "$_c_reset" "$_c_bold" "$USER_TASK_COUNT" "$_c_reset" "$*"
+}
+
+log_reminder() {
+  USER_REMINDER_COUNT=$((USER_REMINDER_COUNT + 1))
+  USER_REMINDERS+=("$*")
+  printf '    %s·%s %s\n' "$_c_cyan" "$_c_reset" "$*"
+}
+
+log_user_tasks_summary() {
+  local n="${USER_TASK_COUNT:-0}"
+  local r="${USER_REMINDER_COUNT:-0}"
+  local noun="user task"
+  local r_noun="reminder"
+  local i=0
+  local task reminder
+
+  [ "$n" -eq 1 ] || noun="user tasks"
+  if [ "$n" -eq 0 ]; then
+    log_info "0 user tasks to perform."
+  else
+    log_info "$n $noun must be performed."
+    for task in "${USER_TASKS[@]}"; do
+      i=$((i + 1))
+      printf '    %s▸%s %s%d.%s %s\n' \
+        "$_c_magenta" "$_c_reset" "$_c_bold" "$i" "$_c_reset" "$task"
+    done
+  fi
+
+  [ "$r" -eq 1 ] || r_noun="reminders"
+  if [ "$r" -eq 0 ]; then
+    return 0
+  fi
+  log_info "$r $r_noun."
+  for reminder in "${USER_REMINDERS[@]}"; do
+    printf '    %s·%s %s\n' "$_c_cyan" "$_c_reset" "$reminder"
+  done
+}
 
 die() {
   log_error "$*"
