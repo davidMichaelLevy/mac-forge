@@ -74,6 +74,7 @@ cask "dropbox"
 cask "appcleaner"
 cask "iina"
 cask "tidal"
+cask "steam"
 cask "stats"
 cask "keka"
 
