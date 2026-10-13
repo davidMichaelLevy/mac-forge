@@ -199,13 +199,13 @@ apply_icloud_drive() {
   fi
 
   log_info "iCloud Drive: off"
-  if ! icloud_service_enabled MOBILE_DOCUMENTS; then
+  if icloud_service_enabled MOBILE_DOCUMENTS; then
+    run_user open "$pane"
+    log_task "Turn off iCloud Drive (System Settings → Apple Account → iCloud), keep a local copy if asked, then re-run."
+  else
     log_success "iCloud Drive already off"
-    return 0
   fi
-
-  run_user open "$pane"
-  log_task "Turn off iCloud Drive (System Settings → Apple Account → iCloud), keep a local copy if asked, then re-run."
+  log_reminder "If Finder still lists iCloud Drive, untick it in Finder → Settings → Sidebar."
 }
 
 apply_icloud_file_sync() {
