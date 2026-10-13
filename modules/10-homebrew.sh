@@ -91,39 +91,38 @@ homebrew_autoupdate_matches() {
   return 0
 }
 
-# The LaunchAgent has no terminal, so macOS checks App Management against the
-# script and Homebrew's ruby when a cask upgrade replaces an app.
+# The LaunchAgent has no terminal, so macOS checks App Management against
+# Homebrew's ruby when a cask upgrade replaces an app. The brew_autoupdate
+# script cannot be added: the App Management picker only accepts apps.
 homebrew_autoupdate_app_management() {
-  local pane script ruby_dir ruby_link ruby_real script_state ruby_state
+  local pane ruby_dir ruby_link ruby_real state
   pane="x-apple.systempreferences:com.apple.preference.security?Privacy_AppBundles"
-  script="$HOME/Library/Application Support/com.github.domt4.homebrew-autoupdate/brew_autoupdate"
   ruby_dir="${HOMEBREW_REPOSITORY:-$(brew --repository)}/Library/Homebrew/vendor/portable-ruby/current/bin"
   ruby_link="$ruby_dir/ruby"
 
   if [ ! -d "${HOMEBREW_PREFIX:-$(brew --prefix)}/Caskroom" ]; then
     return 0
   fi
-  if [ ! -f "$script" ] || [ ! -x "$ruby_link" ]; then
-    log_dim "App Management check skipped (autoupdate script or portable ruby not found)"
+  if [ ! -x "$ruby_link" ]; then
+    log_dim "App Management check skipped (Homebrew portable ruby not found)"
     return 0
   fi
   ruby_real="$(cd -P "$ruby_dir" && pwd)/ruby"
 
-  script_state="$(tcc_state kTCCServiceSystemPolicyAppBundles "$script")"
-  ruby_state="$(tcc_state kTCCServiceSystemPolicyAppBundles "$ruby_real" "$ruby_link")"
-
-  if [ "$script_state" = granted ] && [ "$ruby_state" = granted ]; then
-    log_success "App Management already allowed for scheduled cask upgrades"
-    return 0
-  fi
-  if [ "$script_state" = unknown ] && [ "$ruby_state" = unknown ]; then
-    log_reminder "Allow brew_autoupdate and ruby in Privacy & Security → App Management, or scheduled cask upgrades cannot replace apps."
-    return 0
-  fi
-  run_user open "$pane"
-  log_task "Allow brew_autoupdate and ruby in Privacy & Security → App Management (+, then Command-Shift-G for the paths below), then re-run."
-  log_dim "$script"
-  log_dim "$ruby_real"
+  state="$(tcc_state kTCCServiceSystemPolicyAppBundles "$ruby_real" "$ruby_link")"
+  case "$state" in
+    granted)
+      log_success "App Management already allowed for Homebrew's ruby"
+      ;;
+    unknown)
+      log_reminder "Allow ruby in Privacy & Security → App Management (approve the prompt when it appears), or scheduled cask upgrades cannot replace apps."
+      ;;
+    *)
+      run_user open "$pane"
+      log_task "Allow ruby in Privacy & Security → App Management, then re-run. If it is not listed, approve the prompt the next scheduled upgrade shows."
+      log_dim "$ruby_real"
+      ;;
+  esac
 }
 
 apply_homebrew_autoupdate() {
@@ -145,7 +144,7 @@ apply_homebrew_autoupdate() {
   if is_dry_run; then
     if is_truthy "$want"; then
       log_dim "[dry-run] brew tap domt4/autoupdate && brew autoupdate start $interval --upgrade --cleanup --ac-only"
-      log_dim "[dry-run] check App Management for brew_autoupdate and ruby"
+      log_dim "[dry-run] check App Management for Homebrew's ruby"
     else
       log_dim "[dry-run] brew autoupdate stop"
     fi
