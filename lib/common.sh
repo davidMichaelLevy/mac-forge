@@ -129,6 +129,30 @@ is_dry_run() {
 
 # --- config ---------------------------------------------------------------
 
+# Drop values (exact match) from a config array. Meant for config.sh, e.g.
+#   config_list_remove MACOS_REMOVE_APPS Safari Terminal
+# eval instead of a nameref: the first run is under macOS /bin/bash 3.2.
+config_list_remove() {
+  local _name="$1" _item _drop _skip
+  local _items=() _kept=()
+  shift
+  case "$_name" in
+    ''|[0-9]*|*[!A-Za-z0-9_]*) die "config_list_remove: bad array name '$_name'" ;;
+  esac
+  eval "_items=(\${${_name}[@]+\"\${${_name}[@]}\"})"
+  for _item in ${_items[@]+"${_items[@]}"}; do
+    _skip=
+    for _drop in "$@"; do
+      if [ "$_item" = "$_drop" ]; then
+        _skip=1
+        break
+      fi
+    done
+    [ -n "$_skip" ] || _kept+=("$_item")
+  done
+  eval "${_name}=(\${_kept[@]+\"\${_kept[@]}\"})"
+}
+
 macos_bootstrap_load_config() {
   local defaults="$MACOS_BOOTSTRAP_ROOT/config/config.defaults.sh"
   local example="$MACOS_BOOTSTRAP_ROOT/config/config.example.sh"

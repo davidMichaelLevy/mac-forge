@@ -15,7 +15,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `firefox` | Enable Firefox Sync for `FIREFOX_SYNC_ACCOUNT` (empty = `USER_EMAIL`) |
 | `python` | Installs CPython with pyenv (global + extra 3.x versions), upgrades pip |
 | `macos` | Finder, Dock, keyboard, trackpad, screenshots, 24-hour clock, display sleep (10 min on battery, never on AC), Antarctica's Southern Lights screensaver, firewall, Safari develop menu, Firefox as default browser; ComputerName / HostName / LocalHostName |
-| `preinstalled` | Uninstall optional Apple apps; unpin required Apple apps from the Dock; `MACOS_KEEP_APPS` is left alone |
+| `preinstalled` | Removes the Apple apps in `MACOS_REMOVE_APPS` (defaults include GarageBand, iMovie, Photos, Music, TV and others; `config.example.sh` lists every Apple app, commented out, for `+=` additions). Deletable apps are uninstalled; protected system apps get a best effort instead. Every listed app is unpinned from the Dock; GarageBand's sound libraries are deleted and Photos stops opening when a device connects. |
 | `shell` | Confirms **zsh** is the login shell; registers Homebrew bash in `/etc/shells` |
 | `git` | `user.name` / `user.email` from `GIT_USER_NAME` / `GIT_USER_EMAIL` (empty = `USER_NAME` / `USER_EMAIL`), `main` as default branch, rebase-on-pull, Meld as diff/merge tool |
 | `ssh` | `ed25519` key, macOS Keychain agent, prints the public key for GitHub |

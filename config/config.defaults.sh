@@ -83,82 +83,24 @@ MACOS_TAP_TO_CLICK=true
 MACOS_NATURAL_SCROLL=false
 MACOS_DEFAULT_BROWSER="firefox"
 
-MACOS_OPTIONAL_APPS=(
+# --- preinstalled (used when MODULE_PREINSTALLED_ENABLED=true) ------------
+
+# config.sh extends this with += and drops entries with config_list_remove.
+MACOS_REMOVE_APPS=(
   GarageBand
   iMovie
-  Keynote
-  Numbers
-  Pages
-)
-MACOS_KEEP_APPS=(
-)
-MACOS_NONOPTIONAL_APPS=(
-  "Activity Monitor"
-  "AirPort Utility"
-  "Apple Games"
-  "App Store"
-  Apps
-  "Audio MIDI Setup"
-  Automator
-  "Bluetooth File Exchange"
-  Books
-  "Boot Camp Assistant"
-  Calculator
-  Calendar
-  Chess
-  Clock
-  "ColorSync Utility"
-  Console
-  Contacts
-  Dictionary
-  "Digital Color Meter"
-  "Directory Utility"
-  "Disk Utility"
-  "DVD Player"
-  FaceTime
-  "Find My"
-  Finder
-  "Font Book"
-  Freeform
-  Grapher
-  Home
-  "Image Capture"
-  "Image Playground"
-  "iPhone Mirroring"
-  Journal
-  Magnifier
-  Mail
-  Maps
-  Messages
-  "Migration Assistant"
-  Music
-  News
-  Notes
-  Passwords
-  Phone
-  "Photo Booth"
   Photos
-  Podcasts
-  Preview
-  "Print Center"
-  "QuickTime Player"
-  Reminders
-  Safari
-  "Screen Sharing"
-  Screenshot
-  "Script Editor"
-  Shortcuts
-  Stickies
-  Stocks
-  "System Information"
-  "System Settings"
-  Terminal
-  TextEdit
-  Tips
+  Music
   TV
-  "Voice Memos"
-  "VoiceOver Utility"
-  Weather
+  News
+  Freeform
+  Maps
+  FaceTime
+  Messages
+  Phone
+  "iPhone Mirroring"
+  "App Store"
+  "Apple Games"
 )
 
 # --- python (used when MODULE_PYTHON_ENABLED=true) ------------------------

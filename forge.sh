@@ -39,7 +39,7 @@ Modules (all of them, in order, if you omit the list):
   firefox     Firefox Account sign-in and Sync
   python      Install CPython with pyenv (global plus extra versions)
   macos       Finder, Dock, keyboard, screenshots, and other defaults
-  preinstalled Uninstall optional Apple apps; unpin the rest from the Dock
+  preinstalled Remove MACOS_REMOVE_APPS (uninstall, or Dock unpin if protected)
   shell       Make sure zsh is the login shell
   git         user.name, user.email, sane defaults, Meld as diff/merge tool
   ssh         ed25519 key plus macOS keychain agent

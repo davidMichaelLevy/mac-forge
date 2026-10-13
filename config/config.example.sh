@@ -31,7 +31,7 @@ SSH_KEY_COMMENT=""
 # MODULE_<name>_ENABLED from the filename (22-chrome.sh → MODULE_CHROME_ENABLED).
 # Empty or unset = on; false = skip. Defaults live in config.defaults.sh.
 
-# Off in config.defaults.sh (uninstalls optional Apple apps).
+# Off in config.defaults.sh (removes the apps in MACOS_REMOVE_APPS).
 # MODULE_PREINSTALLED_ENABLED=true
 # Fast-forward this checkout to origin before forge.sh runs
 # (creates a git repo if install used a tarball).
@@ -76,9 +76,88 @@ MACOS_NATURAL_SCROLL=false
 # Leave empty to leave the current default alone.
 MACOS_DEFAULT_BROWSER="firefox"
 
-# Keep these Apple apps if they are also on a remove list (optional or
-# non-optional). Names match the .app bundle (no .app suffix).
-MACOS_KEEP_APPS=(
+# --- preinstalled (used when MODULE_PREINSTALLED_ENABLED=true) ------------
+
+# Apple apps to remove. Names match the .app bundle (no .app suffix).
+# Apps in /Applications are uninstalled and unpinned from the Dock.
+# System apps that macOS protects cannot be deleted, so they are only unpinned.
+# += adds to the defaults in config.defaults.sh; uncomment the ones you want
+# gone. To drop a default entry: config_list_remove MACOS_REMOVE_APPS Music
+MACOS_REMOVE_APPS+=(
+  # Uninstalled (App Store apps in /Applications)
+  # GarageBand
+  # iMovie
+  # Keynote
+  # Numbers
+  # Pages
+
+  # Unpinned from the Dock only (protected system apps)
+  # "Activity Monitor"
+  # "AirPort Utility"
+  # "Apple Games"
+  # "App Store"
+  # Apps
+  # "Audio MIDI Setup"
+  # Automator
+  # "Bluetooth File Exchange"
+  # Books
+  # "Boot Camp Assistant"
+  # Calculator
+  # Calendar
+  # Chess
+  # Clock
+  # "ColorSync Utility"
+  # Console
+  # Contacts
+  # Dictionary
+  # "Digital Color Meter"
+  # "Directory Utility"
+  # "Disk Utility"
+  # "DVD Player"
+  # FaceTime
+  # "Find My"
+  # Finder
+  # "Font Book"
+  # Freeform
+  # Grapher
+  # Home
+  # "Image Capture"
+  # "Image Playground"
+  # "iPhone Mirroring"
+  # Journal
+  # Magnifier
+  # Mail
+  # Maps
+  # Messages
+  # "Migration Assistant"
+  # Music
+  # News
+  # Notes
+  # Passwords
+  # Phone
+  # "Photo Booth"
+  # Photos
+  # Podcasts
+  # Preview
+  # "Print Center"
+  # "QuickTime Player"
+  # Reminders
+  # Safari
+  # "Screen Sharing"
+  # Screenshot
+  # "Script Editor"
+  # Shortcuts
+  # Stickies
+  # Stocks
+  # "System Information"
+  # "System Settings"
+  # Terminal
+  # TextEdit
+  # Tips
+  # TV
+  # "Voice Memos"
+  # "VoiceOver Utility"
+  # Weather
 )
 
 # --- python (used when MODULE_PYTHON_ENABLED=true) ------------------------

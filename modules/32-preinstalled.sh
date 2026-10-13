@@ -1,7 +1,8 @@
 # shellcheck shell=bash
-# preinstalled — uninstall optional Apple apps; unpin both lists from the Dock.
-# MACOS_KEEP_APPS wins when the name is also on a remove list. A keep-only
-# name (not on either remove list) is ignored and is not an error.
+# preinstalled — remove the Apple apps in MACOS_REMOVE_APPS.
+# Deletable apps in /Applications are uninstalled. Protected system apps
+# cannot be deleted, so removal is best effort. Every listed app is unpinned
+# from the Dock, and some get an extra step (preinstalled_best_effort).
 
 if [ -z "${MACOS_BOOTSTRAP_ROOT:-}" ]; then
   MACOS_BOOTSTRAP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -27,40 +28,13 @@ preinstalled_names_equal() {
   return 1
 }
 
-preinstalled_is_kept() {
-  local label="$1" name
-  [ -n "$label" ] || return 1
-  if [ "${#MACOS_KEEP_APPS[@]}" -gt 0 ]; then
-    for name in "${MACOS_KEEP_APPS[@]}"; do
-      preinstalled_names_equal "$label" "$name" && return 0
-    done
-  fi
-  return 1
-}
-
-preinstalled_in_list() {
-  local label="$1" name
-  [ -n "$label" ] || return 1
-  if [ "${#MACOS_OPTIONAL_APPS[@]}" -gt 0 ]; then
-    for name in "${MACOS_OPTIONAL_APPS[@]}"; do
-      preinstalled_names_equal "$label" "$name" && return 0
-    done
-  fi
-  if [ "${#MACOS_NONOPTIONAL_APPS[@]}" -gt 0 ]; then
-    for name in "${MACOS_NONOPTIONAL_APPS[@]}"; do
-      preinstalled_names_equal "$label" "$name" && return 0
-    done
-  fi
-  return 1
-}
-
-# Uninstall/unpin only when the name is on a remove list and not kept.
-# Keep-only names (keep list but neither remove list) are ignored.
 preinstalled_should_remove() {
-  local label="$1"
-  preinstalled_in_list "$label" || return 1
-  preinstalled_is_kept "$label" && return 1
-  return 0
+  local label="$1" name
+  [ -n "$label" ] || return 1
+  for name in "${MACOS_REMOVE_APPS[@]}"; do
+    preinstalled_names_equal "$label" "$name" && return 0
+  done
+  return 1
 }
 
 preinstalled_is_apple_bundle() {
@@ -72,14 +46,36 @@ preinstalled_is_apple_bundle() {
   esac
 }
 
-uninstall_optional_app() {
-  local name="$1" app="/Applications/${name}.app"
+# SIP marks protected apps (Safari in /Applications, everything under
+# /System/Applications) with the restricted flag; rm fails on them.
+preinstalled_is_protected() {
+  local app="$1"
+  case "$app" in
+    /System/*) return 0 ;;
+  esac
+  case "$(stat -f '%Sf' "$app" 2>/dev/null || true)" in
+    *restricted*) return 0 ;;
+  esac
+  return 1
+}
 
-  if preinstalled_is_kept "$name"; then
-    log_success "Keeping $name"
-    return 0
-  fi
-  if [ ! -d "$app" ]; then
+preinstalled_find_app() {
+  local name="$1" dir candidate
+  for dir in /Applications /System/Applications /System/Applications/Utilities; do
+    for candidate in "$name" "${name#Apple }"; do
+      if [ -d "$dir/${candidate}.app" ]; then
+        printf '%s' "$dir/${candidate}.app"
+        return 0
+      fi
+    done
+  done
+  return 1
+}
+
+uninstall_app() {
+  local name="$1" app
+
+  if ! app="$(preinstalled_find_app "$name")"; then
     log_success "$name not installed"
     return 0
   fi
@@ -87,8 +83,55 @@ uninstall_optional_app() {
     log_warn "Skipping $app (not an Apple bundle)"
     return 0
   fi
+  if preinstalled_is_protected "$app"; then
+    log_dim "$name is protected by macOS; best effort only (Dock unpin)"
+    return 0
+  fi
   run sudo rm -rf "$app"
   log_success "Uninstalled $name"
+}
+
+# Logic Pro and MainStage share these libraries, so keep them if either is installed.
+remove_garageband_content() {
+  local path
+  if [ -d /Applications/GarageBand.app ] && ! is_dry_run; then
+    return 0
+  fi
+  if [ -d "/Applications/Logic Pro.app" ] || [ -d "/Applications/Logic Pro X.app" ] \
+    || [ -d /Applications/MainStage.app ]; then
+    log_dim "Keeping GarageBand sound libraries (Logic Pro or MainStage uses them)"
+    return 0
+  fi
+  for path in \
+    "/Library/Application Support/GarageBand" \
+    "/Library/Application Support/Logic" \
+    "/Library/Audio/Apple Loops/Apple"; do
+    if [ -e "$path" ]; then
+      run sudo rm -rf "$path"
+      log_success "Removed $path"
+    fi
+  done
+}
+
+stop_photos_hotplug() {
+  local val
+  if ! is_dry_run; then
+    val="$(run_user_capture defaults -currentHost read com.apple.ImageCapture disableHotPlug 2>/dev/null || true)"
+    if [ "$val" = "1" ]; then
+      log_success "Photos already stays closed when a device connects"
+      return 0
+    fi
+  fi
+  run_user defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
+  log_success "Photos will not open when an iPhone or camera connects"
+}
+
+# Per-app best effort beyond uninstall and Dock unpin. Safe to repeat.
+preinstalled_best_effort() {
+  case "${1#Apple }" in
+    GarageBand) remove_garageband_content ;;
+    Photos) stop_photos_hotplug ;;
+  esac
 }
 
 dock_tile_label() {
@@ -167,16 +210,18 @@ unpin_preinstalled_from_dock() {
   rm -f "$tmp"
 }
 
+if [ "${#MACOS_REMOVE_APPS[@]}" -eq 0 ]; then
+  log_info "MACOS_REMOVE_APPS is empty — nothing to remove"
+  return 0 2>/dev/null || exit 0
+fi
+
 macos_bootstrap_sudo_start
 
-if [ "${#MACOS_OPTIONAL_APPS[@]}" -gt 0 ]; then
-  log_info "Uninstalling optional Apple apps"
-  for name in "${MACOS_OPTIONAL_APPS[@]}"; do
-    uninstall_optional_app "$name"
-  done
-else
-  log_warn "MACOS_OPTIONAL_APPS is empty — nothing to uninstall"
-fi
+log_info "Removing listed Apple apps"
+for name in "${MACOS_REMOVE_APPS[@]}"; do
+  uninstall_app "$name"
+  preinstalled_best_effort "$name"
+done
 
 log_info "Removing listed Apple apps from the Dock"
 unpin_preinstalled_from_dock
