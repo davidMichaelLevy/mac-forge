@@ -359,14 +359,9 @@ displaylink_app_path() {
   return 1
 }
 
-# granted / denied / unknown — Screen Recording lives in TCC and is often unreadable.
 displaylink_screen_recording_state() {
-  local script="$MACOS_BOOTSTRAP_ROOT/lib/displaylink-screen-recording.py"
-  if ! command_exists python3 || [ ! -f "$script" ]; then
-    printf '%s' "unknown"
-    return 0
-  fi
-  run_user_capture python3 "$script" 2>/dev/null || printf '%s' "unknown"
+  tcc_state kTCCServiceScreenCapture \
+    com.displaylink.DisplayLinkUserAgent com.displaylink.DisplayLinkManager
 }
 
 apply_displaylink() {

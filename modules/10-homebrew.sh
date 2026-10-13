@@ -91,6 +91,41 @@ homebrew_autoupdate_matches() {
   return 0
 }
 
+# The LaunchAgent has no terminal, so macOS checks App Management against the
+# script and Homebrew's ruby when a cask upgrade replaces an app.
+homebrew_autoupdate_app_management() {
+  local pane script ruby_dir ruby_link ruby_real script_state ruby_state
+  pane="x-apple.systempreferences:com.apple.preference.security?Privacy_AppBundles"
+  script="$HOME/Library/Application Support/com.github.domt4.homebrew-autoupdate/brew_autoupdate"
+  ruby_dir="${HOMEBREW_REPOSITORY:-$(brew --repository)}/Library/Homebrew/vendor/portable-ruby/current/bin"
+  ruby_link="$ruby_dir/ruby"
+
+  if [ ! -d "${HOMEBREW_PREFIX:-$(brew --prefix)}/Caskroom" ]; then
+    return 0
+  fi
+  if [ ! -f "$script" ] || [ ! -x "$ruby_link" ]; then
+    log_dim "App Management check skipped (autoupdate script or portable ruby not found)"
+    return 0
+  fi
+  ruby_real="$(cd -P "$ruby_dir" && pwd)/ruby"
+
+  script_state="$(tcc_state kTCCServiceSystemPolicyAppBundles "$script")"
+  ruby_state="$(tcc_state kTCCServiceSystemPolicyAppBundles "$ruby_real" "$ruby_link")"
+
+  if [ "$script_state" = granted ] && [ "$ruby_state" = granted ]; then
+    log_success "App Management already allowed for scheduled cask upgrades"
+    return 0
+  fi
+  if [ "$script_state" = unknown ] && [ "$ruby_state" = unknown ]; then
+    log_reminder "Allow brew_autoupdate and ruby in Privacy & Security → App Management, or scheduled cask upgrades cannot replace apps."
+    return 0
+  fi
+  run_user open "$pane"
+  log_task "Allow brew_autoupdate and ruby in Privacy & Security → App Management (+, then Command-Shift-G for the paths below), then re-run."
+  log_dim "$script"
+  log_dim "$ruby_real"
+}
+
 apply_homebrew_autoupdate() {
   local want interval greedy status
   want="${HOMEBREW_AUTOUPDATE:-}"
@@ -110,6 +145,7 @@ apply_homebrew_autoupdate() {
   if is_dry_run; then
     if is_truthy "$want"; then
       log_dim "[dry-run] brew tap domt4/autoupdate && brew autoupdate start $interval --upgrade --cleanup --ac-only"
+      log_dim "[dry-run] check App Management for brew_autoupdate and ruby"
     else
       log_dim "[dry-run] brew autoupdate stop"
     fi
@@ -139,16 +175,17 @@ apply_homebrew_autoupdate() {
   status="$(homebrew_autoupdate_status)"
   if homebrew_autoupdate_matches "$status" "$greedy" "$interval"; then
     log_success "Homebrew autoupdate already scheduled"
-    return 0
+  else
+    run_user env PATH="$PATH" brew autoupdate delete >/dev/null 2>&1 || true
+    if is_truthy "$greedy"; then
+      run_brew autoupdate start "$interval" --upgrade --cleanup --ac-only --greedy
+    else
+      run_brew autoupdate start "$interval" --upgrade --cleanup --ac-only
+    fi
+    log_success "Homebrew autoupdate scheduled ($interval)"
   fi
 
-  run_user env PATH="$PATH" brew autoupdate delete >/dev/null 2>&1 || true
-  if is_truthy "$greedy"; then
-    run_brew autoupdate start "$interval" --upgrade --cleanup --ac-only --greedy
-  else
-    run_brew autoupdate start "$interval" --upgrade --cleanup --ac-only
-  fi
-  log_success "Homebrew autoupdate scheduled ($interval)"
+  homebrew_autoupdate_app_management
 }
 
 apply_homebrew_autoupdate

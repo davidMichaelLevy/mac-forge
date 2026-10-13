@@ -638,6 +638,17 @@ run_user_capture() {
   fi
 }
 
+# granted / denied / missing / unknown for a TCC service and any of the clients.
+# Reading TCC needs Full Disk Access, so unknown is common.
+tcc_state() {
+  local script="$MACOS_BOOTSTRAP_ROOT/lib/tcc-state.py"
+  if ! command_exists python3 || [ ! -f "$script" ]; then
+    printf '%s' "unknown"
+    return 0
+  fi
+  run_user_capture python3 "$script" "$@" 2>/dev/null || printf '%s' "unknown"
+}
+
 # brew as the login user, with progress on long fetches and installs.
 run_brew() {
   run_user env PATH="$PATH" HOMEBREW_COLOR=1 HOMEBREW_VERBOSE=1 brew "$@"
