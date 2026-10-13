@@ -31,8 +31,8 @@ SSH_KEY_COMMENT=""
 # MODULE_<name>_ENABLED from the filename (22-chrome.sh → MODULE_CHROME_ENABLED).
 # Empty or unset = on; false = skip. Defaults live in config.defaults.sh.
 
-# Off in config.defaults.sh (removes the apps in MACOS_REMOVE_APPS).
-# MODULE_PREINSTALLED_ENABLED=true
+# Removes the apps in MACOS_REMOVE_APPS (uninstalls GarageBand and iMovie).
+# MODULE_PREINSTALLED_ENABLED=false
 # Fast-forward this checkout to origin before forge.sh runs
 # (creates a git repo if install used a tarball).
 SYNC_MAC_FORGE=true
@@ -82,7 +82,7 @@ MACOS_DEFAULT_BROWSER="firefox"
 # Apps in /Applications are uninstalled and unpinned from the Dock.
 # System apps that macOS protects cannot be deleted, so they are only unpinned.
 # += adds to the defaults in config.defaults.sh; uncomment the ones you want
-# gone. To drop a default entry: config_list_remove MACOS_REMOVE_APPS Music
+# gone. To keep a default entry, see config_list_remove below the list.
 MACOS_REMOVE_APPS+=(
   # Uninstalled (App Store apps in /Applications)
   # GarageBand
@@ -159,6 +159,12 @@ MACOS_REMOVE_APPS+=(
   # "VoiceOver Utility"
   # Weather
 )
+
+# Keep apps that are on the default list (exact names, one or more per call):
+# config_list_remove MACOS_REMOVE_APPS iMovie
+# config_list_remove MACOS_REMOVE_APPS Messages Phone "iPhone Mirroring"
+# Or replace the defaults entirely instead of adding to them:
+# MACOS_REMOVE_APPS=(GarageBand iMovie)
 
 # --- python (used when MODULE_PYTHON_ENABLED=true) ------------------------
 

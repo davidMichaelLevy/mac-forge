@@ -740,7 +740,7 @@ module_enabled_key() {
 
 # Call from a module as: module_is_enabled "${BASH_SOURCE[0]}"
 # (BASH_SOURCE[0] at module top level is this file; inside this helper it is not.)
-# Unset keys default true; turn a module off in config (e.g. preinstalled).
+# Unset keys default true; turn a module off in config with false.
 module_is_enabled() {
   local path="$1"
   local name key
