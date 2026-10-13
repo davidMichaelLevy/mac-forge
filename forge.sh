@@ -140,6 +140,61 @@ resolve_module_path() {
   return 1
 }
 
+doctor_preinstalled() {
+  local name app path pinned label leftover
+
+  printf '\n    Preinstalled apps\n'
+  if is_falsy "${MODULE_PREINSTALLED_ENABLED:-}"; then
+    log_dim "module off (MODULE_PREINSTALLED_ENABLED=false)"
+  fi
+  if [ "${#MACOS_REMOVE_APPS[@]}" -eq 0 ]; then
+    log_dim "MACOS_REMOVE_APPS is empty"
+    return 0
+  fi
+
+  # shellcheck source=lib/preinstalled.sh
+  source "$MACOS_BOOTSTRAP_ROOT/lib/preinstalled.sh"
+
+  if ! pinned="$(preinstalled_dock_labels)"; then
+    log_warn "Dock         could not read Dock preferences"
+    pinned=""
+  fi
+
+  for name in "${MACOS_REMOVE_APPS[@]}"; do
+    if ! app="$(preinstalled_find_app "$name")"; then
+      log_success "$(printf '%-17s not installed' "$name")"
+    elif preinstalled_is_protected "$app"; then
+      log_success "$(printf '%-17s protected by macOS' "$name")"
+    else
+      log_warn "$(printf '%-17s still installed (run ./forge.sh preinstalled)' "$name")"
+    fi
+    while IFS= read -r label; do
+      if [ -n "$label" ] && preinstalled_names_equal "$label" "$name"; then
+        log_warn "$(printf '%-17s pinned in the Dock' "$name")"
+        break
+      fi
+    done <<<"$pinned"
+    case "${name#Apple }" in
+      GarageBand)
+        if [ ! -d /Applications/GarageBand.app ] && ! preinstalled_logic_installed; then
+          leftover=""
+          while IFS= read -r path; do
+            [ -e "$path" ] && leftover="$path"
+          done < <(preinstalled_garageband_paths)
+          if [ -n "$leftover" ]; then
+            log_warn "$(printf '%-17s sound libraries remain (%s)' "$name" "$leftover")"
+          fi
+        fi
+        ;;
+      Photos)
+        if ! preinstalled_photos_hotplug_disabled; then
+          log_warn "$(printf '%-17s opens when a device connects' "$name")"
+        fi
+        ;;
+    esac
+  done
+}
+
 run_doctor() {
   local ok missing
 
@@ -231,6 +286,10 @@ run_doctor() {
       log_warn "$(printf '%-11s missing' "$link")"
     fi
   done
+
+  if is_macos; then
+    doctor_preinstalled
+  fi
 
   if is_macos && command_exists brew; then
     printf '\n    Brewfile\n'
