@@ -179,9 +179,47 @@ icloud_desktop_documents_on() {
   return 1
 }
 
+apply_icloud_drive() {
+  local want="${MACOS_ICLOUD_DRIVE:-}"
+  local pane="x-apple.systempreferences:com.apple.systempreferences.AppleIDSettings?email/prefs/storage?root=APPLE_ACCOUNT&path=ICLOUD_SERVICE&dataclassId=com.apple.Dataclass.Ubiquity"
+
+  if [ -z "$want" ]; then
+    log_info "iCloud Drive: leave current"
+    return 0
+  fi
+
+  if is_truthy "$want"; then
+    log_info "iCloud Drive: leave enabled"
+    return 0
+  fi
+
+  if ! is_falsy "$want"; then
+    log_warn "MACOS_ICLOUD_DRIVE=$want (use true, false, or empty)"
+    return 0
+  fi
+
+  log_info "iCloud Drive: off"
+  if ! icloud_service_enabled MOBILE_DOCUMENTS; then
+    log_success "iCloud Drive already off"
+    return 0
+  fi
+
+  run_user open "$pane"
+  log_task "Turn off iCloud Drive (System Settings → Apple Account → iCloud), keep a local copy if asked, then re-run."
+}
+
 apply_icloud_file_sync() {
   local want="${MACOS_ICLOUD_FILE_SYNC:-}"
   local pane="x-apple.systempreferences:com.apple.systempreferences.AppleIDSettings?email/prefs/storage?root=APPLE_ACCOUNT&path=ICLOUD_SERVICE&dataclassId=com.apple.Dataclass.Ubiquity"
+
+  if is_falsy "${MACOS_ICLOUD_DRIVE:-}"; then
+    if is_truthy "$want"; then
+      log_warn "MACOS_ICLOUD_FILE_SYNC=$want has no effect when MACOS_ICLOUD_DRIVE=false (Desktop & Documents sync needs iCloud Drive)"
+    else
+      log_dim "iCloud file sync: covered by MACOS_ICLOUD_DRIVE=false"
+    fi
+    return 0
+  fi
 
   if [ -z "$want" ]; then
     log_info "iCloud file sync: leave current"
@@ -250,36 +288,15 @@ apply_icloud_photos_sync() {
   log_task "Turn off iCloud Photos (or Photos → Settings → iCloud), choose Download if you want a local library, then re-run."
 }
 
-icloud_calendar_is_on() {
-  # Prompt only when MobileMeAccounts says Calendars is enabled.
-  # Missing Enabled is treated as off so we do not keep opening Settings.
+icloud_service_enabled() {
   if ! command_exists python3; then
     return 1
   fi
-  python3 -c '
-import pathlib, plistlib, sys
-path = pathlib.Path.home() / "Library/Preferences/MobileMeAccounts.plist"
-if not path.is_file():
-    raise SystemExit(1)
-try:
-    data = plistlib.loads(path.read_bytes())
-except Exception:
-    raise SystemExit(1)
-for account in data.get("Accounts") or []:
-    if not isinstance(account, dict):
-        continue
-    for service in account.get("Services") or []:
-        if not isinstance(service, dict):
-            continue
-        name = str(service.get("Name") or service.get("ServiceName") or "")
-        sid = str(service.get("ServiceID") or "")
-        blob = f"{name} {sid}".upper()
-        if "CALENDAR" not in blob:
-            continue
-        if service.get("Enabled") in (True, 1, "1"):
-            raise SystemExit(0)
-raise SystemExit(1)
-' >/dev/null 2>&1
+  python3 "$MACOS_BOOTSTRAP_ROOT/lib/icloud-service-enabled.py" "$1" >/dev/null 2>&1
+}
+
+icloud_calendar_is_on() {
+  icloud_service_enabled CALENDAR
 }
 
 apply_icloud_calendar_sync() {
@@ -606,6 +623,7 @@ apply_keyboard
 apply_trackpad
 apply_screenshots
 apply_finder
+apply_icloud_drive
 apply_icloud_file_sync
 apply_icloud_photos_sync
 apply_icloud_calendar_sync

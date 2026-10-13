@@ -61,8 +61,12 @@ EXCLUSIVE_CASK_CHOICES=(
 
 # true = 24-hour, false = 12-hour, empty = leave the current clock.
 MACOS_24_HOUR_CLOCK=true
-# false = Desktop and Documents stay local. true / empty = leave iCloud file sync.
-# There is no CLI for this switch; forge opens iCloud Drive settings if they still sync.
+# false = iCloud Drive off (also stops Desktop & Documents sync and removes it
+# from Finder). There is no CLI; forge opens iCloud Drive settings while
+# MobileMeAccounts still shows it enabled.
+MACOS_ICLOUD_DRIVE=false
+# Used only when iCloud Drive stays on: false = Desktop and Documents stay local.
+# true / empty = leave iCloud file sync.
 MACOS_ICLOUD_FILE_SYNC=false
 # false = iCloud Photos off. There is no CLI; forge opens iCloud Photos
 # settings if sync still looks on.
