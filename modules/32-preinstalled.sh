@@ -88,7 +88,9 @@ uninstall_app() {
     return 0
   fi
   run sudo rm -rf "$app"
-  log_success "Uninstalled $name"
+  if ! is_dry_run; then
+    log_success "Uninstalled $name"
+  fi
 }
 
 # Logic Pro and MainStage share these libraries, so keep them if either is installed.
@@ -108,7 +110,9 @@ remove_garageband_content() {
     "/Library/Audio/Apple Loops/Apple"; do
     if [ -e "$path" ]; then
       run sudo rm -rf "$path"
-      log_success "Removed $path"
+      if ! is_dry_run; then
+        log_success "Removed $path"
+      fi
     fi
   done
 }
@@ -123,7 +127,9 @@ stop_photos_hotplug() {
     fi
   fi
   run_user defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
-  log_success "Photos will not open when an iPhone or camera connects"
+  if ! is_dry_run; then
+    log_success "Photos will not open when an iPhone or camera connects"
+  fi
 }
 
 # Per-app best effort beyond uninstall and Dock unpin. Safe to repeat.
@@ -170,14 +176,13 @@ import_dock_plist() {
 unpin_preinstalled_from_dock() {
   local tmp count i label changed=0
 
-  tmp="$(mktemp "${TMPDIR:-/tmp}/mac-forge-dock.XXXXXX")"
-  chmod a+rw "$tmp"
-
   if is_dry_run; then
     log_dim "[dry-run] export Dock, delete listed tiles, import"
-    rm -f "$tmp"
     return 0
   fi
+
+  tmp="$(mktemp "${TMPDIR:-/tmp}/mac-forge-dock.XXXXXX")"
+  chmod a+rw "$tmp"
 
   if ! export_dock_plist "$tmp"; then
     log_warn "Could not read Dock preferences"
