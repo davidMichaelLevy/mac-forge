@@ -28,6 +28,7 @@ Default apps from the Brewfile include Ghostty, Kitty, iTerm2, Rectangle, Raycas
 - macOS 13 or later (Apple Silicon or Intel)
 - An admin account (Homebrew and a few defaults need `sudo`)
 - Network access for Homebrew and Xcode tools
+- Full Disk Access for the terminal app you run forge from (recommended). macOS grants it per app, not per script. forge checks at the start of each run and logs a user task if it is missing; without it, permission checks fall back to reminders and Safari's protected settings are skipped.
 
 ## Quick start
 

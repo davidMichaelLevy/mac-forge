@@ -649,6 +649,49 @@ tcc_state() {
   run_user_capture python3 "$script" "$@" 2>/dev/null || printf '%s' "unknown"
 }
 
+# Open a TCC-protected file; [ -r ] cannot see TCC denials.
+has_full_disk_access() {
+  local probe="$HOME/Library/Application Support/com.apple.TCC/TCC.db"
+  [ -f "$probe" ] || probe="/Library/Application Support/com.apple.TCC/TCC.db"
+  head -c 1 "$probe" >/dev/null 2>&1
+}
+
+# The app macOS credits for forge (Full Disk Access is granted per app).
+terminal_app_name() {
+  local id="${__CFBundleIdentifier:-}" path=""
+  if [ -n "$id" ] && command_exists mdfind; then
+    path="$(mdfind "kMDItemCFBundleIdentifier == '$id'" 2>/dev/null | head -n 1 || true)"
+  fi
+  if [ -n "$path" ]; then
+    basename "$path" .app
+    return 0
+  fi
+  case "${TERM_PROGRAM:-}" in
+    Apple_Terminal) printf '%s' "Terminal" ;;
+    iTerm.app) printf '%s' "iTerm2" ;;
+    ghostty) printf '%s' "Ghostty" ;;
+    vscode) printf '%s' "your editor (Cursor or VS Code)" ;;
+    *)
+      if [ -n "${KITTY_WINDOW_ID:-}" ]; then
+        printf '%s' "kitty"
+      else
+        printf '%s' "your terminal app"
+      fi
+      ;;
+  esac
+}
+
+macos_bootstrap_check_full_disk_access() {
+  local pane="x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+  if has_full_disk_access; then
+    log_success "Full Disk Access granted"
+    return 0
+  fi
+  run_user open "$pane"
+  log_task "Grant Full Disk Access to $(terminal_app_name), quit and reopen it, then re-run forge from it."
+  log_dim "Without it forge cannot verify privacy permissions or write Safari's protected settings."
+}
+
 # brew as the login user, with progress on long fetches and installs.
 run_brew() {
   run_user env PATH="$PATH" HOMEBREW_COLOR=1 HOMEBREW_VERBOSE=1 brew "$@"

@@ -213,6 +213,13 @@ run_doctor() {
   else
     log_warn "Xcode CLT   not found"
   fi
+  if is_macos; then
+    if has_full_disk_access; then
+      log_success "Full Disk  granted to $(terminal_app_name)"
+    else
+      log_warn "Full Disk  not granted to $(terminal_app_name)"
+    fi
+  fi
 
   eval_brew_shellenv
   eval_pyenv
@@ -368,6 +375,11 @@ if ! confirm "Run these modules on this Mac?"; then
   exit 1
 fi
 
+if is_macos; then
+  log_step "Full Disk Access"
+  macos_bootstrap_check_full_disk_access
+fi
+
 FAILED=0
 for path in $MODULE_QUEUE; do
   name="$(module_name_from_path "$path")"
@@ -393,5 +405,8 @@ else
   log_success "Bootstrap finished."
   log_info "Open a new terminal so shell and PATH changes take effect."
   log_info "Some macOS defaults apply fully after logout or restart."
+  if is_macos && [ "$USER_TASK_COUNT" -eq 0 ] && has_full_disk_access; then
+    log_reminder "Nothing left that needs it: turn off Full Disk Access for $(terminal_app_name) in Privacy & Security."
+  fi
 fi
 log_user_tasks_summary
