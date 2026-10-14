@@ -808,7 +808,8 @@ run_brew() {
       flags+=(--debug --verbose)
       ;;
   esac
-  run_user env "${env_args[@]}" brew "${flags[@]}" "$@"
+  # Homebrew only accepts --verbose/--debug/--quiet after the subcommand.
+  run_user env "${env_args[@]}" brew "$@" "${flags[@]}"
 }
 
 # Ensure pyenv shims are on PATH for this process.
