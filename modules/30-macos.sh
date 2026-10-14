@@ -378,6 +378,16 @@ apply_spaces() {
   fi
 }
 
+apply_windows() {
+  log_info "Windows"
+  defaults_write com.apple.WindowManager GloballyEnabled -bool false
+
+  defaults_write com.apple.WindowManager EnableTilingByEdgeDrag -bool true
+  defaults_write com.apple.WindowManager EnableTopTilingByEdgeDrag -bool true
+  defaults_write com.apple.WindowManager EnableTilingOptionAccelerator -bool true
+  defaults_write com.apple.WindowManager EnableTiledWindowMargins -bool false
+}
+
 displaylink_app_path() {
   local p
   for p in \
@@ -619,11 +629,11 @@ apply_apps() {
 
 restart_ui() {
   if is_dry_run; then
-    log_dim "[dry-run] killall Dock Finder SystemUIServer ControlCenter"
+    log_dim "[dry-run] killall Dock Finder SystemUIServer ControlCenter WindowManager"
     return 0
   fi
   log_info "Restarting Dock, Finder, SystemUIServer, and ControlCenter"
-  killall Dock Finder SystemUIServer ControlCenter cfprefsd >/dev/null 2>&1 || true
+  killall Dock Finder SystemUIServer ControlCenter WindowManager cfprefsd >/dev/null 2>&1 || true
 }
 
 quit_system_settings
@@ -644,6 +654,7 @@ apply_icloud_photos_sync
 apply_icloud_calendar_sync
 apply_dock
 apply_spaces
+apply_windows
 apply_safari
 apply_default_browser
 apply_displaylink
