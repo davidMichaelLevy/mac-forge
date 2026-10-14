@@ -284,10 +284,17 @@ is_quietest() {
 }
 
 # Words to splice into a child command. Empty when this level adds none.
-git_verbosity_flags() {
+# fetch has -q/--verbose; checkout only has -q.
+git_fetch_verbosity_flags() {
   case "${VERBOSITY:-0}" in
     -2|-1) printf '%s' '-q' ;;
     1|2) printf '%s' '--verbose' ;;
+  esac
+}
+
+git_checkout_verbosity_flags() {
+  case "${VERBOSITY:-0}" in
+    -2|-1) printf '%s' '-q' ;;
   esac
 }
 

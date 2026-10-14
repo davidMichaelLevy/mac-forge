@@ -34,9 +34,9 @@ macos_bootstrap_sync() {
 
   if is_dry_run; then
     # shellcheck disable=SC2046
-    macos_bootstrap_forge_git fetch $(git_verbosity_flags) origin "$ref"
+    macos_bootstrap_forge_git fetch $(git_fetch_verbosity_flags) origin "$ref"
     # shellcheck disable=SC2046
-    macos_bootstrap_forge_git checkout $(git_verbosity_flags) -B "$ref" "origin/${ref}"
+    macos_bootstrap_forge_git checkout $(git_checkout_verbosity_flags) -B "$ref" "origin/${ref}"
     return 0
   fi
 
@@ -50,10 +50,10 @@ macos_bootstrap_sync() {
   fi
 
   # shellcheck disable=SC2046
-  macos_bootstrap_forge_git fetch $(git_verbosity_flags) origin "$ref"
+  macos_bootstrap_forge_git fetch $(git_fetch_verbosity_flags) origin "$ref"
   macos_bootstrap_log_incoming_commits "$ref"
   # shellcheck disable=SC2046
-  if ! macos_bootstrap_forge_git checkout $(git_verbosity_flags) -B "$ref" "origin/${ref}"; then
+  if ! macos_bootstrap_forge_git checkout $(git_checkout_verbosity_flags) -B "$ref" "origin/${ref}"; then
     log_warn "Could not update onto origin/${ref}; leaving the checkout as-is."
     return 0
   fi
