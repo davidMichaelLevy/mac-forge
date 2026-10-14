@@ -47,7 +47,8 @@ if is_apple_silicon && is_truthy "${INSTALL_ROSETTA:-true}"; then
     log_success "Rosetta 2 already installed"
   else
     log_info "Installing Rosetta 2"
-    run softwareupdate --install-rosetta --agree-to-license
+    # shellcheck disable=SC2046
+    run softwareupdate --install-rosetta --agree-to-license $(softwareupdate_verbosity_flags)
     log_success "Rosetta 2 installed"
   fi
 else

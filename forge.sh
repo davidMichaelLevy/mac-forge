@@ -27,9 +27,13 @@ Options:
   -h, --help         Show this help
   -y, --yes          Don't ask for confirmation
   --dry-run          Print commands without running them
+  -q, -qq, --quiet   Quieter child tools (-qq/--quiet hides their output)
+  -v, -vv, --verbose Louder child tools (--verbose is -vv)
   --list             List available modules and exit
   --skip-os-check    Allow running off macOS (for dry-run / CI)
   doctor             Report what's already installed and configured
+
+Verbosity stacks like pip. No flag is today's output. Extra -q/-v cap.
 
 Modules (all of them, in order, if you omit the list):
   prereqs     Xcode Command Line Tools, Rosetta
@@ -52,6 +56,8 @@ Examples:
   ./forge.sh
   ./forge.sh --dry-run
   ./forge.sh -y packages git
+  ./forge.sh -q macos
+  ./forge.sh --verbose packages
   ./forge.sh doctor
 EOF
 }
@@ -67,6 +73,7 @@ done
 
 macos_bootstrap_adopt_sudo_identity
 
+VERBOSITY=0
 while [ $# -gt 0 ]; do
   case "$1" in
     -h|--help)
@@ -80,6 +87,20 @@ while [ $# -gt 0 ]; do
     --dry-run)
       DRY_RUN=true
       shift
+      ;;
+    --quiet|--verbose|-q*)
+      if macos_bootstrap_apply_verbosity_arg "$1"; then
+        shift
+      else
+        die "Unknown option: $1 (see --help)"
+      fi
+      ;;
+    -v*)
+      if macos_bootstrap_apply_verbosity_arg "$1"; then
+        shift
+      else
+        die "Unknown option: $1 (see --help)"
+      fi
       ;;
     --list)
       LIST_ONLY=true
@@ -106,7 +127,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-export DRY_RUN ASSUME_YES
+export DRY_RUN ASSUME_YES VERBOSITY
 
 print_banner() {
   printf '%s\n' "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

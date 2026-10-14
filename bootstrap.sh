@@ -21,8 +21,10 @@ Usage:
   ./bootstrap.sh [options] [args...]
 
 Options:
-  -h, --help     Show this help, then forge.sh help (extra args are forwarded)
-  --dry-run      Print commands without running them
+  -h, --help             Show this help, then forge.sh help (extra args are forwarded)
+  --dry-run              Print commands without running them
+  -q, -qq, --quiet       Quieter child tools (forwarded to forge.sh)
+  -v, -vv, --verbose     Louder child tools (forwarded to forge.sh)
 
 SYNC_MAC_FORGE=false in config skips the git update. After sync, this script
 re-execs itself so a just-pulled bootstrap.sh is what runs forge.sh.
@@ -32,6 +34,7 @@ EOF
 }
 
 # Peek only. Remaining flags and module names are parsed later.
+VERBOSITY=0
 for arg in "$@"; do
   case "$arg" in
     -h|--help)
@@ -45,9 +48,13 @@ for arg in "$@"; do
     --dry-run)
       DRY_RUN=true
       ;;
+    *)
+      macos_bootstrap_apply_verbosity_arg "$arg" || true
+      ;;
   esac
 done
 export DRY_RUN ASSUME_YES
+# Do not export VERBOSITY: forge.sh parses argv again and would double-count.
 
 macos_bootstrap_adopt_sudo_identity
 macos_bootstrap_load_config

@@ -30,7 +30,7 @@ fi
 
 log_info "Installing from $BREWFILE"
 # shellcheck disable=SC2086
-run_brew bundle --verbose $BUNDLE_ARGS
+run_brew bundle $BUNDLE_ARGS
 log_success "Brewfile applied"
 
 # Exclusive cask sets: keep one member, uninstall the rest if present.
@@ -66,7 +66,7 @@ uninstall_exclusive_cask() {
     return 0
   fi
   if cask_is_installed "$token"; then
-    run_brew uninstall --cask --verbose "$token"
+    run_brew uninstall --cask "$token"
     log_success "Uninstalled $token"
   fi
 }
@@ -81,7 +81,7 @@ install_exclusive_cask() {
     log_success "$token already installed"
     return 0
   fi
-  run_brew install --cask --verbose "$token"
+  run_brew install --cask "$token"
   log_success "Installed $token"
 }
 

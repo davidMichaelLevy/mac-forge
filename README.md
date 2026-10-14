@@ -55,6 +55,8 @@ cp config/config.example.sh config/config.sh
 # edit config/Brewfile   — formulae and casks
 ./bootstrap.sh --dry-run          # see the plan
 ./bootstrap.sh                    # apply it
+./bootstrap.sh -q macos           # quieter child tools
+./bootstrap.sh --verbose packages # loudest child tools
 ./bootstrap.sh doctor             # inspect the result
 ```
 
@@ -102,6 +104,7 @@ scripts/check.sh      bash -n + shellcheck
 ## Safety
 
 - **`--dry-run`** prints commands and writes nothing.
+- **Verbosity** is pip-style and stacks: `-q` / `-qq` / `--quiet` (quietest), no flag (today's output), `-v` / `-vv` / `--verbose` (loudest). `--quiet` is `-qq`; `--verbose` is `-vv`. Extra stacks cap; `-q` and `-v` net. Forge's own logs stay; `-qq` hides child-tool output unless the command fails.
 - A `~/.zshrc` or `~/.zprofile` that is still a symlink is replaced with a source wrapper. Other existing files that are not already links to the home store are moved aside as `*.bak.<timestamp>`. An existing real `~/.zshrc` without the wrapper gets the source block prepended so installer lines are kept.
 - `~/.ssh/config` is appended with a marked block, not overwritten. An existing key is left alone.
 - Git `user.name` / `user.email` are only written when `GIT_USER_NAME` / `GIT_USER_EMAIL` are set (they default to `USER_NAME` / `USER_EMAIL`).

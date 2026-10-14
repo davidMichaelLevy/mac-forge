@@ -49,7 +49,7 @@ install_official_homebrew() {
 if command_exists brew; then
   log_success "Homebrew already installed ($(brew --prefix))"
   log_info "Updating Homebrew"
-  run_brew update --verbose
+  run_brew update
 else
   log_info "Installing Homebrew (you may be prompted for your password)."
   if is_dry_run; then

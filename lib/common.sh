@@ -8,6 +8,8 @@ MACOS_BOOTSTRAP_COMMON_LOADED=1
 
 DRY_RUN="${DRY_RUN:-false}"
 ASSUME_YES="${ASSUME_YES:-false}"
+# Signed pip-style stack: -2 (-qq/--quiet) .. 0 (default) .. +2 (-vv/--verbose).
+VERBOSITY="${VERBOSITY:-0}"
 USER_TASK_COUNT=0
 USER_TASKS=()
 USER_REMINDER_COUNT=0
@@ -230,6 +232,87 @@ macos_bootstrap_write_effective_config() {
   } > "$dest"
 }
 
+# --- verbosity ------------------------------------------------------------
+
+macos_bootstrap_clamp_verbosity() {
+  if [ "$VERBOSITY" -lt -2 ]; then
+    VERBOSITY=-2
+  elif [ "$VERBOSITY" -gt 2 ]; then
+    VERBOSITY=2
+  fi
+}
+
+# Apply one argv token. Return 0 if it was a verbosity flag.
+macos_bootstrap_apply_verbosity_arg() {
+  local arg="$1" n
+  case "$arg" in
+    --quiet)
+      VERBOSITY=$((VERBOSITY - 2))
+      macos_bootstrap_clamp_verbosity
+      return 0
+      ;;
+    --verbose)
+      VERBOSITY=$((VERBOSITY + 2))
+      macos_bootstrap_clamp_verbosity
+      return 0
+      ;;
+    -q*)
+      n="${arg#-}"
+      case "$n" in
+        *[!q]*) return 1 ;;
+      esac
+      VERBOSITY=$((VERBOSITY - ${#n}))
+      macos_bootstrap_clamp_verbosity
+      return 0
+      ;;
+    -v*)
+      n="${arg#-}"
+      case "$n" in
+        *[!v]*) return 1 ;;
+      esac
+      VERBOSITY=$((VERBOSITY + ${#n}))
+      macos_bootstrap_clamp_verbosity
+      return 0
+      ;;
+  esac
+  return 1
+}
+
+# Hide all child output (dump on failure). --quiet / -qq.
+is_quietest() {
+  [ "${VERBOSITY:-0}" -le -2 ]
+}
+
+# Words to splice into a child command. Empty when this level adds none.
+git_verbosity_flags() {
+  case "${VERBOSITY:-0}" in
+    -2|-1) printf '%s' '-q' ;;
+    1|2) printf '%s' '--verbose' ;;
+  esac
+}
+
+pip_verbosity_flags() {
+  case "${VERBOSITY:-0}" in
+    -2) printf '%s' '-qq' ;;
+    -1) printf '%s' '-q' ;;
+    1) printf '%s' '-v' ;;
+    2) printf '%s' '-vvv' ;;
+  esac
+}
+
+pyenv_install_verbosity_flags() {
+  case "${VERBOSITY:-0}" in
+    1) printf '%s' '--verbose' ;;
+    2) printf '%s %s' '--verbose' '--debug' ;;
+  esac
+}
+
+softwareupdate_verbosity_flags() {
+  case "${VERBOSITY:-0}" in
+    1|2) printf '%s' '--verbose' ;;
+  esac
+}
+
 # --- run wrappers ---------------------------------------------------------
 
 _child_tag() {
@@ -264,12 +347,22 @@ _prefix_child_lines() {
 
 _run_with_child_logs() {
   local tag="$1"
-  local ec shopts
+  local ec shopts tmp
   shift
   shopts="$-"
   set +e
-  "$@" 2>&1 | _prefix_child_lines "$tag"
-  ec="${PIPESTATUS[0]}"
+  if is_quietest; then
+    tmp="$(mktemp "${TMPDIR:-/tmp}/mac-forge.XXXXXX")"
+    "$@" >"$tmp" 2>&1
+    ec=$?
+    if [ "$ec" -ne 0 ]; then
+      _prefix_child_lines "$tag" <"$tmp"
+    fi
+    rm -f "$tmp"
+  else
+    "$@" 2>&1 | _prefix_child_lines "$tag"
+    ec="${PIPESTATUS[0]}"
+  fi
   case "$shopts" in
     *e*) set -e ;;
   esac
@@ -692,9 +785,30 @@ macos_bootstrap_check_full_disk_access() {
   log_dim "Without it forge cannot verify privacy permissions or write Safari's protected settings."
 }
 
-# brew as the login user, with progress on long fetches and installs.
+# brew as the login user. Verbosity flags follow VERBOSITY (default = today's --verbose).
 run_brew() {
-  run_user env PATH="$PATH" HOMEBREW_COLOR=1 HOMEBREW_VERBOSE=1 brew "$@"
+  local env_args flags
+  env_args=(PATH="$PATH" HOMEBREW_COLOR=1)
+  flags=()
+  case "${VERBOSITY:-0}" in
+    -2|-1)
+      env_args+=(HOMEBREW_QUIET=1)
+      flags+=(--quiet)
+      ;;
+    0)
+      env_args+=(HOMEBREW_VERBOSE=1)
+      flags+=(--verbose)
+      ;;
+    1)
+      env_args+=(HOMEBREW_VERBOSE=1 HOMEBREW_DEBUG=1 HOMEBREW_DISABLE_DEBREW=1)
+      flags+=(--debug --verbose)
+      ;;
+    2)
+      env_args+=(HOMEBREW_VERBOSE=1 HOMEBREW_DEBUG=1 HOMEBREW_CURL_VERBOSE=1 HOMEBREW_DISABLE_DEBREW=1)
+      flags+=(--debug --verbose)
+      ;;
+  esac
+  run_user env "${env_args[@]}" brew "${flags[@]}" "$@"
 }
 
 # Ensure pyenv shims are on PATH for this process.

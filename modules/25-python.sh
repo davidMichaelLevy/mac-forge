@@ -63,12 +63,14 @@ install_cpython() {
     log_success "Python $version already installed"
   else
     log_info "Installing Python $version via pyenv (compiles from source; may take a few minutes)"
-    run_user pyenv install --skip-existing "$version"
+    # shellcheck disable=SC2046
+    run_user pyenv install --skip-existing $(pyenv_install_verbosity_flags) "$version"
   fi
 
   if [ -x "${PYENV_ROOT}/versions/${version}/bin/python" ]; then
     log_info "Upgrading pip, setuptools, and wheel for $version"
-    run_user env PYENV_VERSION="$version" pyenv exec pip install --upgrade pip setuptools wheel
+    # shellcheck disable=SC2046
+    run_user env PYENV_VERSION="$version" pyenv exec pip install $(pip_verbosity_flags) --upgrade pip setuptools wheel
   fi
 }
 
