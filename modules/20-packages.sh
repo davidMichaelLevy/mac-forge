@@ -114,3 +114,33 @@ apply_exclusive_cask_sets() {
 }
 
 apply_exclusive_cask_sets
+
+# Uncommented `brew "token"` / `cask "token"` lines only (not `# cask "token"`).
+brewfile_has() {
+  local kind="$1" token="$2"
+  grep -Eq "^[[:space:]]*${kind}[[:space:]]+\"${token}\"([,[:space:]]|$)" "$BREWFILE"
+}
+
+remind_if_listed() {
+  local kind="$1" token="$2" msg="$3"
+  brewfile_has "$kind" "$token" || return 0
+  if [ "$kind" = cask ] && ! is_truthy "${INSTALL_CASKS:-true}"; then
+    return 0
+  fi
+  log_reminder "$msg"
+}
+
+# Chrome and Firefox have their own modules. DisplayLink is a macos task.
+# Order: unlock accounts → sync → work identity → editors → chat → leisure.
+remind_if_listed cask bitwarden "Open Bitwarden and sign in."
+remind_if_listed cask crosspaste "Open CrossPaste and grant Accessibility (and any other prompts) so clipboard sync works."
+remind_if_listed cask dropbox "Open Dropbox and sign in."
+remind_if_listed brew gh "Run gh auth login to sign GitHub CLI in."
+remind_if_listed brew mas "Sign in to the Mac App Store (required before mas can install anything)."
+remind_if_listed cask cursor "Open Cursor and sign in."
+remind_if_listed cask claude "Open Claude and sign in."
+remind_if_listed cask claude-code "Run claude to sign Anthropic Claude Code in."
+remind_if_listed cask slack "Open Slack and sign in."
+remind_if_listed cask signal "Open Signal and sign in."
+remind_if_listed cask tidal "Open TIDAL and sign in."
+remind_if_listed cask steam "Open Steam and sign in."
