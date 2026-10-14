@@ -341,6 +341,7 @@ apply_finder() {
   defaults_write com.apple.finder FXPreferredViewStyle -string "Nlsv"
   defaults_write com.apple.finder NewWindowTarget -string "PfHm"
   defaults_write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
+  defaults_write com.apple.finder ShowRecentTags -bool false
   defaults_write com.apple.desktopservices DSDontWriteNetworkStores -bool true
   defaults_write com.apple.desktopservices DSDontWriteUSBStores -bool true
   if ! is_dry_run; then
@@ -360,6 +361,20 @@ apply_dock() {
     defaults_write com.apple.dock autohide -bool true
     defaults_write com.apple.dock autohide-delay -float 0
     defaults_write com.apple.dock autohide-time-modifier -float 0.35
+  else
+    defaults_write com.apple.dock autohide -bool false
+  fi
+}
+
+apply_spaces() {
+  log_info "Spaces"
+  local spans=""
+  if ! is_dry_run; then
+    spans="$(run_user_capture defaults read com.apple.spaces spans-displays 2>/dev/null || true)"
+  fi
+  defaults_write com.apple.spaces spans-displays -bool false
+  if [ "$spans" = "1" ]; then
+    log_reminder "Log out and back in to enable separate Spaces for each display."
   fi
 }
 
@@ -628,6 +643,7 @@ apply_icloud_file_sync
 apply_icloud_photos_sync
 apply_icloud_calendar_sync
 apply_dock
+apply_spaces
 apply_safari
 apply_default_browser
 apply_displaylink
