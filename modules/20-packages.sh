@@ -134,6 +134,7 @@ remind_if_listed() {
 # Order: unlock accounts → sync → work identity → editors → chat → leisure.
 remind_if_listed cask bitwarden "Open Bitwarden and sign in."
 remind_if_listed cask crosspaste "Open CrossPaste and grant Accessibility (and any other prompts) so clipboard sync works."
+remind_if_listed cask nikitabobko/tap/aerospace "Open AeroSpace and grant Accessibility so tiling works."
 remind_if_listed cask dropbox "Open Dropbox and sign in."
 remind_if_listed brew gh "Run gh auth login to sign GitHub CLI in."
 remind_if_listed brew mas "Sign in to the Mac App Store (required before mas can install anything)."

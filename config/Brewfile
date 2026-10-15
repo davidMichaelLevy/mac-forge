@@ -3,9 +3,10 @@
 # Formulae always install when MODULE_PACKAGES_ENABLED=true.
 # Casks (apps + fonts) install when INSTALL_CASKS=true.
 
-# Tappie is a Homebrew GUI. Homebrew 6 will not load this third-party cask
-# until it is trusted; trust only tappie, not the rest of the tap.
+# Third-party casks. Homebrew 6+ will not load them until trusted; trust
+# only these tokens, not the rest of each tap.
 tap "empiricapps/zenithal"
+tap "nikitabobko/tap"
 
 # --- CLI: version control & GitHub ----------------------------------------
 brew "git"
@@ -58,6 +59,7 @@ brew "mas"
 
 # --- apps -----------------------------------------------------------------
 cask "empiricapps/zenithal/tappie", trusted: true
+cask "nikitabobko/tap/aerospace", trusted: true  # i3-like tiling WM
 cask "rectangle"
 cask "raycast"
 cask "crosspaste"
