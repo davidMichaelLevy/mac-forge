@@ -3,6 +3,10 @@
 #
 #   bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh)
 #
+# Non-interactive as root (do not use sudo bash <(…); that FD is closed):
+#
+#   curl -fsSL -o /tmp/mac-forge-install.sh …/install.sh && sudo bash /tmp/mac-forge-install.sh -y
+#
 # Extra arguments are passed through to bootstrap.sh (and then forge.sh).
 #
 set -euo pipefail
@@ -27,6 +31,10 @@ mac-forge installer — download a tarball, then run bootstrap.sh so forge.sh ca
 
 Usage:
   bash <(curl -fsSL https://raw.githubusercontent.com/${REPO_SLUG}/main/install.sh) [options] [args...]
+
+Non-interactive as root (-y skips forge's confirm). Do not use sudo bash <(…); that FD is closed:
+
+  curl -fsSL -o /tmp/mac-forge-install.sh https://raw.githubusercontent.com/${REPO_SLUG}/main/install.sh && sudo bash /tmp/mac-forge-install.sh -y
 
 Options:
   -h, --help     Show this help, then the next script's help (extra args are forwarded)

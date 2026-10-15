@@ -45,6 +45,14 @@ bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/m
 bash <(curl -fsSL https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh) --no-run
 ```
 
+Non-interactive as root (fewer mid-run `sudo` prompts). Do not use `sudo bash <(…)`; that FD is closed (`Bad file descriptor`). Save the script, then run it:
+
+```bash
+curl -fsSL -o /tmp/mac-forge-install.sh https://raw.githubusercontent.com/davidMichaelLevy/mac-forge/main/install.sh && sudo bash /tmp/mac-forge-install.sh -y
+```
+
+`-y` skips forge's confirm prompt. The installer still puts the tree under your home via `SUDO_USER`.
+
 Or clone it yourself:
 
 ```bash
