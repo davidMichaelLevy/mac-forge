@@ -70,6 +70,8 @@ cask "meld"
 cask "bitwarden"
 cask "signal"
 cask "slack"
+cask "discord"
+cask "zoom"
 cask "dropbox"
 cask "appcleaner"
 cask "iina"
@@ -92,9 +94,10 @@ cask "tor-browser"
 # Optional extras — uncomment as needed:
 # Docker Desktop vs OrbStack: set EXCLUSIVE_CASK_CHOICES in config.sh.
 # Do not add both casks here.
-# cask "zoom"
 # cask "notion"
 # cask "spotify"
+# Netflix is App Store–only (no Homebrew cask):
+# mas "Netflix", id: 363590051
 # cask "figma"
 # cask "obsidian"
 
