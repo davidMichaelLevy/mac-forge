@@ -28,6 +28,7 @@ MODULE_PACKAGES_ENABLED=""
 MODULE_CHROME_ENABLED=""
 MODULE_FIREFOX_ENABLED=""
 MODULE_PYTHON_ENABLED=""
+MODULE_JAVA_ENABLED=""
 MODULE_MACOS_ENABLED=""
 MODULE_PREINSTALLED_ENABLED=""
 MODULE_SHELL_ENABLED=""
@@ -108,6 +109,18 @@ MACOS_REMOVE_APPS=(
 
 PYENV_PYTHON_VERSION="latest"
 PYENV_PYTHON_EXTRA_VERSIONS="3.9 3.10 3.11 3.12 3.13 3.14"
+
+# --- java (used when MODULE_JAVA_ENABLED=true) ----------------------------
+
+# Amazon Corretto identifier suffix (amzn). A full identifier in the version
+# list (21.0.0.0+35-tem) is installed as written.
+SDKMAN_JAVA_VENDOR="amzn"
+# Default JDK. "latest", a major like "21", or an exact SDKMAN identifier.
+# 25 is the newest Java that AWS Lambda runs.
+SDKMAN_JAVA_VERSION="25"
+# Installed, not set as the default. 8, 11, 17, 21, and 25 are the Lambda
+# runtimes. 26 and 27 are newer and are not Lambda runtimes.
+SDKMAN_JAVA_EXTRA_VERSIONS="8 11 17 21 25 26 27"
 
 # --- chrome (used when MODULE_CHROME_ENABLED=true) ------------------------
 

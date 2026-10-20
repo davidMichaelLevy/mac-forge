@@ -14,6 +14,7 @@ The scripts are **idempotent**. You can re-run them after you change the Brewfil
 | `chrome` | Enable Chrome Google sign-in and sync, limited to `CHROME_GOOGLE_ACCOUNT` (empty = `USER_EMAIL`) |
 | `firefox` | Enable Firefox Sync for `FIREFOX_SYNC_ACCOUNT` (empty = `USER_EMAIL`) |
 | `python` | Installs CPython with pyenv (global + extra 3.x versions), upgrades pip |
+| `java` | Installs JDKs with SDKMAN (default + extra versions, Amazon Corretto unless an identifier names another vendor) |
 | `macos` | Finder, Dock, keyboard, trackpad, screenshots, 24-hour clock, display sleep (10 min on battery, never on AC), Antarctica's Southern Lights screensaver, firewall, Safari develop menu, Firefox as default browser; ComputerName / HostName / LocalHostName |
 | `preinstalled` | Removes the Apple apps in `MACOS_REMOVE_APPS` (defaults include GarageBand, iMovie, Photos, Music, TV and others; `config.example.sh` lists every Apple app, commented out, for `+=` additions). Deletable apps are uninstalled; protected system apps get a best effort instead. Every listed app is unpinned from the Dock; GarageBand's sound libraries are deleted and Photos stops opening when a device connects. |
 | `shell` | Confirms **zsh** is the login shell; registers Homebrew bash in `/etc/shells` |
@@ -76,7 +77,7 @@ Open a **new terminal** when it finishes so PATH, zsh, and Starship pick up the 
 
 Nothing in the scripts is meant to be edited for day-to-day taste. Change these instead:
 
-1. **`config/config.sh`** — overlay on `config.defaults.sh` (identity including `USER_NAME` / `USER_EMAIL`, ComputerName, `MODULE_<name>_ENABLED` kill switches, Docker vs OrbStack, clock, scroll, browser, keep-apps, Python, Chrome, Firefox, Git). Missing keys keep the default. Start from `config.example.sh` (copied if `config.sh` is missing). The merge is written to `config/effective.config` and then sourced as the runtime config.
+1. **`config/config.sh`** — overlay on `config.defaults.sh` (identity including `USER_NAME` / `USER_EMAIL`, ComputerName, `MODULE_<name>_ENABLED` kill switches, Docker vs OrbStack, clock, scroll, browser, keep-apps, Python, Java, Chrome, Firefox, Git). Missing keys keep the default. Start from `config.example.sh` (copied if `config.sh` is missing). The merge is written to `config/effective.config` and then sourced as the runtime config.
 2. **`config/Brewfile`** — comment out casks you do not want; add taps, formulae, or `mas` App Store ids. Exclusive pairs (Docker vs OrbStack) are not listed here; they come from config.
 3. **`dotfiles/`** — zsh, Starship, and the global gitignore. Re-run forge to copy them into `~/.config/mac-forge/dotfiles`. `~/.zshrc` / `~/.zprofile` source that store; other names are symlinks. The checkout is not the live target.
 4. **`~/.zshrc.local`** — machine-only aliases and secrets. The managed zshrc sources it if present.

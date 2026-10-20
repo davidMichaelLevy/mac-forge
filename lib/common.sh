@@ -829,6 +829,19 @@ eval_pyenv() {
   fi
 }
 
+# Put the SDKMAN default JDK on PATH. `sdk` itself is a shell function, so
+# this does not source sdkman-init.sh (that script wants Bash 4+ or zsh).
+eval_sdkman() {
+  export SDKMAN_DIR="${SDKMAN_DIR:-$HOME/.sdkman}"
+  if [ -d "$SDKMAN_DIR/candidates/java/current/bin" ]; then
+    export JAVA_HOME="$SDKMAN_DIR/candidates/java/current"
+    case ":$PATH:" in
+      *":$JAVA_HOME/bin:"*) ;;
+      *) export PATH="$JAVA_HOME/bin:$PATH" ;;
+    esac
+  fi
+}
+
 # Ensure Homebrew is on PATH for the rest of this process (Apple Silicon + Intel).
 eval_brew_shellenv() {
   if [ -x /opt/homebrew/bin/brew ]; then

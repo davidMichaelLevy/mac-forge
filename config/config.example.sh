@@ -182,6 +182,24 @@ PYENV_PYTHON_VERSION="latest"
 # Leave empty to install only the global version.
 PYENV_PYTHON_EXTRA_VERSIONS="3.9 3.10 3.11 3.12 3.13 3.14"
 
+# --- java (used when MODULE_JAVA_ENABLED=true) ----------------------------
+
+# Vendor suffix used when a version is not already a full identifier.
+# amzn = Amazon Corretto (the JDK AWS Lambda runs).
+SDKMAN_JAVA_VENDOR="amzn"
+
+# JDK to install with SDKMAN and set as the default.
+# "latest" (newest stable build for SDKMAN_JAVA_VENDOR), a major like "25",
+# or an exact identifier like "25.0.1.0+8-amzn".
+# Leave empty to skip installing a default JDK.
+SDKMAN_JAVA_VERSION="25"
+
+# Extra JDKs to install and leave available. Not set as the default.
+# Space-separated majors or exact identifiers. Leave empty to install only
+# the default JDK. 8, 11, 17, 21, and 25 are the Lambda runtimes.
+# 26 and 27 are newer and are not Lambda runtimes.
+SDKMAN_JAVA_EXTRA_VERSIONS="8 11 17 21 25 26 27"
+
 # --- chrome (used when MODULE_CHROME_ENABLED=true) ------------------------
 
 # Google account for Chrome sign-in and sync. Empty = USER_EMAIL.

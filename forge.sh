@@ -42,6 +42,7 @@ Modules (all of them, in order, if you omit the list):
   chrome      Google Chrome sign-in and sync for your Google account
   firefox     Firefox Account sign-in and Sync
   python      Install CPython with pyenv (global plus extra versions)
+  java        Install JDKs with SDKMAN (default plus extra versions)
   macos       Finder, Dock, keyboard, screenshots, and other defaults
   preinstalled Remove MACOS_REMOVE_APPS (uninstall, or Dock unpin if protected)
   shell       Make sure zsh is the login shell
@@ -217,7 +218,7 @@ doctor_preinstalled() {
 }
 
 run_doctor() {
-  local ok missing
+  local ok missing java_home java_id
 
   log_step "Doctor"
   printf '    OS:          %s %s\n' "$(uname -s)" "$(uname -m)"
@@ -268,6 +269,25 @@ run_doctor() {
     done < <(pyenv versions --bare 2>/dev/null || true)
   else
     log_warn "pyenv        missing"
+  fi
+
+  printf '\n    Java\n'
+  eval_sdkman
+  if [ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]; then
+    log_success "$(printf '%-11s %s' "SDKMAN" "$SDKMAN_DIR")"
+    if command_exists java; then
+      log_success "$(printf '%-11s %s' "java" "$(java -version 2>&1 | awk 'NR==1 { print; exit }')")"
+    else
+      log_warn "$(printf '%-11s missing (run ./bootstrap.sh java)' "java")"
+    fi
+    for java_home in "$SDKMAN_DIR/candidates/java"/*; do
+      [ -d "$java_home" ] || continue
+      java_id="${java_home##*/}"
+      [ "$java_id" = "current" ] && continue
+      log_success "$(printf '%-11s %s' "installed" "$java_id")"
+    done
+  else
+    log_warn "SDKMAN      missing"
   fi
 
   printf '\n    Identity\n'
