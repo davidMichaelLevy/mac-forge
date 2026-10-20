@@ -115,37 +115,43 @@ apply_exclusive_cask_sets() {
 
 apply_exclusive_cask_sets
 
-# Uncommented `brew "token"` / `cask "token"` lines only (not `# cask "token"`).
-brewfile_has() {
-  local kind="$1" token="$2"
-  grep -Eq "^[[:space:]]*${kind}[[:space:]]+\"${token}\"([,[:space:]]|$)" "$BREWFILE"
+# Uncommented `kind "token"` lines only (not `# cask "token"`).
+# kind is ignored: brew, cask, mas, tap, or anything else. A tap path matches
+# its final component (`nikitabobko/tap/aerospace` and `aerospace` are the same).
+brewfile_lists() {
+  local token="$1"
+  local short="${token##*/}"
+  local escaped_token escaped_short
+
+  escaped_token="$(printf '%s' "$token" | sed -E 's/[][(){}.+*?^$|\\]/\\&/g')"
+  escaped_short="$(printf '%s' "$short" | sed -E 's/[][(){}.+*?^$|\\]/\\&/g')"
+  grep -Eq "^[[:space:]]*[A-Za-z][A-Za-z0-9_]*[[:space:]]+\"(${escaped_token}|[^\"]*/${escaped_short}|${escaped_short})\"([,[:space:]]|$)" "$BREWFILE"
 }
 
 remind_if_listed() {
-  local kind="$1" token="$2" msg="$3"
-  brewfile_has "$kind" "$token" || return 0
-  if [ "$kind" = cask ] && ! is_truthy "${INSTALL_CASKS:-true}"; then
-    return 0
-  fi
+  local token="$1"
+  local msg="$2"
+
+  brewfile_lists "$token" || return 0
   log_reminder "$msg"
 }
 
 # Chrome and Firefox have their own modules. DisplayLink is a macos task.
 # Order: unlock accounts → sync → work identity → editors → chat → leisure.
-remind_if_listed cask bitwarden "Open Bitwarden and sign in."
-remind_if_listed cask crosspaste "Open CrossPaste and grant Accessibility (and any other prompts) so clipboard sync works."
-remind_if_listed cask nikitabobko/tap/aerospace "Open AeroSpace and grant Accessibility so tiling works."
-remind_if_listed cask dropbox "Open Dropbox and sign in."
-remind_if_listed brew gh "Run gh auth login to sign GitHub CLI in."
-remind_if_listed brew mas "Sign in to the Mac App Store (required before mas can install anything)."
-remind_if_listed cask cursor "Open Cursor and sign in."
-remind_if_listed cask claude "Open Claude and sign in."
-remind_if_listed cask claude-code "Run claude to sign Anthropic Claude Code in."
-remind_if_listed cask slack "Open Slack and sign in."
-remind_if_listed cask signal "Open Signal and sign in."
-remind_if_listed cask discord "Open Discord and sign in."
-remind_if_listed cask zoom "Open Zoom and sign in."
-remind_if_listed cask tidal "Open TIDAL and sign in."
-remind_if_listed cask spotify "Open Spotify and sign in."
-remind_if_listed mas Netflix "Open Netflix and sign in."
-remind_if_listed cask steam "Open Steam and sign in."
+remind_if_listed bitwarden "Open Bitwarden and sign in."
+remind_if_listed crosspaste "Open CrossPaste and grant Accessibility (and any other prompts) so clipboard sync works."
+remind_if_listed nikitabobko/tap/aerospace "Open AeroSpace and grant Accessibility so tiling works."
+remind_if_listed dropbox "Open Dropbox and sign in."
+remind_if_listed gh "Run gh auth login to sign GitHub CLI in."
+remind_if_listed mas "Sign in to the Mac App Store (required before mas can install anything)."
+remind_if_listed cursor "Open Cursor and sign in."
+remind_if_listed claude "Open Claude and sign in."
+remind_if_listed claude-code "Run claude to sign Anthropic Claude Code in."
+remind_if_listed slack "Open Slack and sign in."
+remind_if_listed signal "Open Signal and sign in."
+remind_if_listed discord "Open Discord and sign in."
+remind_if_listed zoom "Open Zoom and sign in."
+remind_if_listed tidal "Open TIDAL and sign in."
+remind_if_listed spotify "Open Spotify and sign in."
+remind_if_listed Netflix "Open Netflix and sign in."
+remind_if_listed steam "Open Steam and sign in."
