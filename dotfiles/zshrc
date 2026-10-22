@@ -70,7 +70,6 @@ fi
 if command -v pyenv >/dev/null 2>&1; then
   export PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"
   eval "$(pyenv init - zsh)"
-  export PIPENV_PYTHON="${PYENV_ROOT}/shims/python"
 fi
 
 export SDKMAN_DIR="${SDKMAN_DIR:-$HOME/.sdkman}"
