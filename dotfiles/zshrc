@@ -12,6 +12,10 @@ compinit -C
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 
+# Treat `# ...` as a comment at the prompt too, so pasted commands with
+# trailing or full-line comments run instead of passing `#` words as arguments.
+setopt INTERACTIVE_COMMENTS
+
 bindkey -e
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
